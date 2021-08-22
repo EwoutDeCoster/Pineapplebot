@@ -1,4 +1,4 @@
-# Pineapple Bot
+# Pineapple Bot (legacy)
 <img src="https://i.imgur.com/K0uUxXb.png" title="Pineapple Logo" alt="Pineapple logo" width="150"/><br>
 It's not allowed to copy the bot or host it yourself.
 Future development is <b>not updated</b> here.
