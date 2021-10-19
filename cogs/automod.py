@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import datetime
+from datetime import datetime, timedelta
 import asyncio
 import sqlite3
 
@@ -40,7 +40,7 @@ class Automod(commands.Cog, name='Automod'):
                     embed.add_field(
                         name=f"Invite", value=f"{message.content}", inline=False)
                     embed.set_author(name=f"{message.author}",
-                                    icon_url=f"{message.author.avatar_url}")
+                                     icon_url=f"{message.author.avatar_url}")
                     embed.set_footer(
                         text=f"ID: {message.author.id}")
                     await channel.send(embed=embed)
@@ -58,7 +58,7 @@ class Automod(commands.Cog, name='Automod'):
                     embed.add_field(
                         name=f"Message:", value=f"{message.content}", inline=False)
                     embed.set_author(name=f"{message.author}",
-                                    icon_url=f"{message.author.avatar_url}")
+                                     icon_url=f"{message.author.avatar_url}")
                     embed.set_footer(
                         text=f"ID: {message.author.id}")
                     await channel.send(embed=embed)
@@ -70,6 +70,56 @@ class Automod(commands.Cog, name='Automod'):
                 pass
         else:
             return
+
+    @commands.Cog.listener()
+    @commands.guild_only()
+    async def on_member_update(self, before, after):
+        if not before.bot and before.nick != after.nick:
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            cursor.execute(
+                f"SELECT checknicks, modlog_id FROM main WHERE guild_id = {before.guild.id}")
+            result = cursor.fetchone()
+            if result[0] == "1" and after.nick is not None:
+                if after.nick.startswith("!") or after.nick.startswith(" ") or after.name.startswith("?") or after.nick.startswith("\"") or after.nick.startswith("#") or after.nick.startswith("$") or after.nick.startswith("%") or after.nick.startswith("&") or after.nick.startswith("\'") or after.nick.lower().startswith("aaa") or "卐" in after.nick:
+                    try:
+                        hoist = after.nick
+                        await after.edit(nick="no hoisting")
+                    except:
+                        pass
+                    try:
+                        channel = self.client.get_channel(int(result[1]))
+                        embed = discord.Embed(
+                            color=0xff0000, timestamp=datetime.utcnow())
+                        embed.add_field(
+                            name=f"** **", value=f"{before.mention} **tried to change his nickname to** `{hoist}`", inline=False)
+                        embed.set_author(name=f"{before}",
+                                         icon_url=f"{before.avatar_url}")
+                        embed.set_footer(
+                            text=f"ID: {before.id}")
+                        await channel.send(embed=embed)
+                    except:
+                        pass
+            elif result[0] == "1" and after.nick is None:
+                if after.name.startswith("!") or after.name.startswith(" ") or after.name.startswith("?") or after.name.startswith("\"") or after.name.startswith("#") or after.name.startswith("$") or after.name.startswith("%") or after.name.startswith("&") or after.name.startswith("\'") or after.name.lower().startswith("aaa") or "卐" in after.name:
+                    try:
+                        hoist = after.name
+                        await after.edit(nick="no hoisting")
+                    except:
+                        pass
+                    try:
+                        channel = self.client.get_channel(int(result[1]))
+                        embed = discord.Embed(
+                            color=0xff0000, timestamp=datetime.utcnow())
+                        embed.add_field(
+                            name=f"** **", value=f"{before.mention} **tried to change his actual name to** `{hoist}`", inline=False)
+                        embed.set_author(name=f"{before}",
+                                         icon_url=f"{before.avatar_url}")
+                        embed.set_footer(
+                            text=f"ID: {before.id}")
+                        await channel.send(embed=embed)
+                    except:
+                        pass
 
 
 def setup(client):

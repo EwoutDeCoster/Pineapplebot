@@ -10,6 +10,8 @@ import requests
 import sys
 import sqlite3
 
+from cogs.starboard import Starboard
+
 webs = str("Pineapplebot.ga")
 
 
@@ -59,7 +61,7 @@ class Config(commands.Cog, name='Config'):
             cursor.close()
             db.close()
         else:
-            await ctx.send("**⚠ | You don't have the perms to do that!**")
+            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
 
     @welcome.command()
     @commands.guild_only()
@@ -85,7 +87,7 @@ class Config(commands.Cog, name='Config'):
             cursor.close()
             db.close()
         else:
-            await ctx.send("**⚠ | You don't have the perms to do that!**")
+            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
 
     @welcome.command()
     @commands.guild_only()
@@ -103,7 +105,7 @@ class Config(commands.Cog, name='Config'):
             cursor.close()
             db.close()
         except:
-            await ctx.send("**⚠ | Failed to update DM join message.**")
+            await ctx.send("**<a:no:898507018527211540> | Failed to update DM join message.**")
 
     @welcome.command()
     @commands.guild_only()
@@ -121,7 +123,7 @@ class Config(commands.Cog, name='Config'):
             cursor.close()
             db.close()
         except:
-            await ctx.send("**⚠ | Failed to update join role.**")
+            await ctx.send("**<a:no:898507018527211540> | Failed to update join role.**")
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
@@ -163,11 +165,11 @@ class Config(commands.Cog, name='Config'):
                 channell = ctx.guild.get_channel(int(getchannel[0]))
                 await channell.edit(name=f'Members: {ctx.guild.member_count}')
             except:
-                ctx.send("**⚠ | Could not update membercount**")
+                ctx.send("**<a:no:898507018527211540> | Could not update membercount**")
             cursor.close()
             db.close()
         else:
-            await ctx.send("**⚠ | You don't have the perms to do that!**")
+            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
 
     @membercount.command()
     @commands.guild_only()
@@ -189,7 +191,7 @@ class Config(commands.Cog, name='Config'):
                 await asyncio.sleep(2)
                 await msg.delete()
             except:
-                errormsg = await ctx.send("**⚠ | No membercount set**")
+                errormsg = await ctx.send("**<a:no:898507018527211540> | No membercount set**")
                 await asyncio.sleep(2)
                 await errormsg.delete()
         cursor.close()
@@ -206,6 +208,8 @@ class Config(commands.Cog, name='Config'):
             name="-moderation urlfilter [enable | disable]", value="Enable or disable the url filter", inline=False)
         embed.add_field(
             name="-moderation invitefilter [enable | disable]", value="Enable or disable the invite filter", inline=False)
+        embed.add_field(
+            name="-moderation checknicknames [enable | disable]", value="Enable or disable the nickname checker", inline=False)
         embed.set_footer(
             text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
@@ -235,7 +239,7 @@ class Config(commands.Cog, name='Config'):
             cursor.close()
             db.close()
         else:
-            await ctx.send("**⚠ | You don't have the perms to do that!**")
+            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
 
     @moderation.command()
     @commands.guild_only()
@@ -264,7 +268,7 @@ class Config(commands.Cog, name='Config'):
             db.close()
             await ctx.send(f"⚙** | Url filter has been disabled!**")
         else:
-            await ctx.send("**⚠ | Valid arguments: `enable`, `disable`!**")
+            await ctx.send("**<a:no:898507018527211540> | Valid arguments: `enable`, `disable`!**")
 
     @moderation.command()
     @commands.guild_only()
@@ -293,7 +297,36 @@ class Config(commands.Cog, name='Config'):
             db.close()
             await ctx.send(f"⚙** | Invite filter has been disabled!**")
         else:
-            await ctx.send("**⚠ | Valid arguments: `enable`, `disable`!**")
+            await ctx.send("**<a:no:898507018527211540> | Valid arguments: `enable`, `disable`!**")
+
+    @moderation.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def checknicknames(self, ctx, arg):
+        if arg.lower() == "enable":
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            sql = (
+                "UPDATE main SET checknicks = ? where guild_id = ?")
+            val = ("1", ctx.guild.id)
+            cursor.execute(sql, val)
+            db.commit()
+            cursor.close()
+            db.close()
+            await ctx.send(f"⚙** | Nickname checker has been enabled!**")
+        elif arg.lower() == "disable":
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            sql = (
+                "UPDATE main SET checknicks = ? where guild_id = ?")
+            val = ("0", ctx.guild.id)
+            cursor.execute(sql, val)
+            db.commit()
+            cursor.close()
+            db.close()
+            await ctx.send(f"⚙** | Nickname checker has been disabled!**")
+        else:
+            await ctx.send("**<a:no:898507018527211540> | Valid arguments: `enable`, `disable`!**")
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
@@ -334,7 +367,7 @@ class Config(commands.Cog, name='Config'):
             cursor.close()
             db.close()
         else:
-            await ctx.send("**⚠ | You don't have the perms to do that!**")
+            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
 
     @suggestions.command()
     @commands.guild_only()
@@ -349,19 +382,106 @@ class Config(commands.Cog, name='Config'):
             if result is None:
                 sql = ("INSERT INTO main(guild_id, handsugs) VALUES(?,?)")
                 val = (ctx.guild.id, channel.id)
-                await ctx.send(f"⚙ | Handled suggestions channel has been set to {channel.mention}")
+                await ctx.send(f"⚙ **| Handled suggestions channel has been set to {channel.mention}**")
 
             else:
                 sql = ("UPDATE main SET handsugs = ? where guild_id = ?")
                 val = (channel.id, ctx.guild.id)
-                await ctx.send(f"⚙ | Handled suggestions channel has been updated to {channel.mention}")
+                await ctx.send(f"⚙ **| Handled suggestions channel has been updated to {channel.mention}**")
 
             cursor.execute(sql, val)
             db.commit()
             cursor.close()
             db.close()
         else:
-            await ctx.send("**⚠ | You don't have the perms to do that!**")
+            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
+
+    @commands.group(invoke_without_command=True)
+    @commands.guild_only()
+    async def starboard(self, ctx):
+        embed = discord.Embed(
+            title="⚙️ Starboard", description="Customize the starboard settings!", color=0x006ce0)
+        embed.add_field(name="-starboard toggle",
+                        value="Toggle the starboard on or off.", inline=False)
+        embed.add_field(name="-starboard setchannel [channel]",
+                        value="Set the channel where the starboard will be displayed.", inline=False)
+        embed.add_field(name="-starboard stars [amount]",
+                        value="Set the amount of stars needed for a message to be displayed on the starboard.", inline=False)
+        embed.set_footer(
+            text=f"Starboard settings.")
+        await ctx.send(embed=embed)
+    
+    @starboard.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def toggle(self, ctx):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT guild FROM starboard WHERE guild = {ctx.guild.id}")
+        result = cursor.fetchone()
+        if result is None:
+            sql = ("INSERT INTO starboard(guild, status) VALUES(?,?)")
+            val = (ctx.guild.id, 1)
+            await ctx.send(f"⚙ **| Starboard has been enabled!**")
+        elif result == 1:
+            sql = ("INSERT INTO starboard(guild, status) VALUES(?,?)")
+            val = (ctx.guild.id, 0)
+            await ctx.send(f"⚙ **| Starboard has been disabled!**")
+        elif result == 0:
+            sql = ("INSERT INTO starboard(guild, status) VALUES(?,?)")
+            val = (ctx.guild.id, 1)
+            await ctx.send(f"⚙ **| Starboard has been enabled!**")
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        db.close()
+    
+    @starboard.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def setchannel(self, ctx, chnl: discord.TextChannel):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT guild, channel FROM starboard WHERE guild = {ctx.guild.id}")
+        result = cursor.fetchone()
+        if result is None:
+            sql = ("INSERT INTO starboard(guild, status, channel) VALUES(?,?,?)")
+            val = (ctx.guild.id, 1, chnl.id)
+            await ctx.send(f"⚙ **| Starboard has been enabled and the channel has been set to {chnl.mention}!**")
+        else:
+            sql = ("UPDATE starboard SET channel = ? where guild = ?")
+            val = (chnl.id, ctx.guild.id)
+            await ctx.send(f"⚙ **| Starboard channel has been updated to {chnl.mention}**")
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        db.close()
+    
+
+    @starboard.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def stars(self, ctx, amount: int):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT guild FROM starboard WHERE guild = {ctx.guild.id}")
+        result = cursor.fetchone()
+        if result is None:
+            sql = ("INSERT INTO starboard(guild, stars) VALUES(?,?)")
+            val = (ctx.guild.id, amount)
+            await ctx.send(f"⚙ **| Starboard has been enabled and the required stars has been set to `{amount}`!**")
+        else:
+            sql = ("UPDATE starboard SET stars = ? where guild = ?")
+            val = (amount, ctx.guild.id)
+            await ctx.send(f"⚙ **| The required stars for starboard has been set to `{amount}`!**")
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        db.close()
+
 
 
 def setup(client):

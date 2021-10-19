@@ -8,13 +8,13 @@ import os
 import urllib
 import requests
 import sys
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 import yfinance as yf
 import mplfinance as mpf
 import matplotlib.pyplot as plt
 import pandas as pd
+import psutil
 
 webs = str("Pineapplebot.ga")
 
@@ -282,7 +282,7 @@ class Info(commands.Cog, name='Info'):
             await ctx.send(embed=embed)
             await ctx.send(embed=c)
         except:
-            await ctx.send("**⚠ | Use a valid clash of clans playertag.**")
+            await ctx.send("**<a:no:898507018527211540> | Use a valid clash of clans playertag.**")
 
     @commands.command()
     @commands.guild_only()
@@ -370,6 +370,10 @@ class Info(commands.Cog, name='Info'):
 
         joined_at = f"{user.joined_at.strftime('%d/%m/%Y at %H:%M')} "
         created_at = f"{user.created_at.strftime('%d/%m/%Y at %H:%M')} "
+        if user.is_on_mobile():
+            statuss = "📱"
+        else:
+            statuss = status_types[user.raw_status]
 
         embed = discord.Embed(color=user.color)
         embed.set_author(name=user,
@@ -379,7 +383,7 @@ class Info(commands.Cog, name='Info'):
         embed.add_field(name="ID",
                         value=user.id)
         embed.add_field(name="Status",
-                        value=f"{status_types[user.raw_status]}")
+                        value=f"{statuss}")
         embed.add_field(name="Badges",
                         value=await self.get_badges(user))
         embed.add_field(name="Dates",
@@ -587,6 +591,18 @@ class Info(commands.Cog, name='Info'):
             await ctx.send(file=discord.File('msft.png'))
         except:
             await ctx.send("**⚠ | Make sure all information is correct.**")
+
+    @commands.command()
+    @commands.guild_only()
+    async def vps(self, ctx):
+        if ctx.author.id == 302075047244333056:
+            embed = discord.Embed(
+                title='Server usage:', color=0x0a4d8b, timestamp=datetime.utcnow())
+            embed.add_field(name="💻 CPU",
+                            value=f'{psutil.cpu_percent(1)*10} %', inline=True)
+            embed.add_field(
+                name="🧮 Memory", value=f'{int(int(psutil.virtual_memory().total - psutil.virtual_memory().available) / 1024 / 1024)} Mb', inline=True)
+            await ctx.send(embed=embed)
 
 
 def setup(client):

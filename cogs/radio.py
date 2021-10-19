@@ -15,6 +15,7 @@ from pathlib import Path
 from youtube_dl import YoutubeDL
 
 webs = str("Pineapplebot.ga")
+authservers = [456754639031762944, 828628284806922251]
 
 
 class Radio(commands.Cog, name='Radio'):
@@ -34,26 +35,8 @@ class Radio(commands.Cog, name='Radio'):
         self.duration = 0
         self.starttime = 0
 
-    @commands.command()
-    @commands.guild_only()
-    async def airhorn(self, ctx):
-        await ctx.message.delete()
-        global player
-        url = 'airhorn.mp3'
-        channel = ctx.message.author.voice.channel
-        voice = get(self.client.voice_clients, guild=ctx.guild)
-
-        if voice and voice.is_connected():
-            await voice.disconnect()
-            await asyncio.sleep(1)
-
-        try:
-            player = await channel.connect()
-        except:
-            await ctx.send("⚠ **| An unknown error occured.**")
-        player.play(FFmpegPCMAudio(url))
-
      # searching the item on youtube
+
     def search_yt(self, item):
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
             try:
@@ -62,7 +45,7 @@ class Radio(commands.Cog, name='Radio'):
             except Exception:
                 return False
 
-        return {'source': info['formats'][0]['url'], 'title': info['title'], 'thumb': info["thumbnail"], 'duration': info['duration']}
+        return {'source': info['formats'][0]['url'], 'title': info['title'], 'thumb': info["thumbnail"], 'duration': info['duration'], 'webpage_url': info['webpage_url']}
 
     def play_next(self):
         if len(self.music_queue) > 0:
@@ -133,33 +116,48 @@ class Radio(commands.Cog, name='Radio'):
     @commands.guild_only()
     async def p(self, ctx, *args):
         try:
-            query = " ".join(args)
+            if ctx.guild.id in authservers:
+                query = " ".join(args)
 
-            voice_channel = ctx.author.voice.channel
-            if voice_channel is None:
-                # you need to be connected so that the bot knows where to go
-                await ctx.send("⚠ **| Connect to a voice channel!**")
-            else:
-                song = self.search_yt(query)
-                if type(song) == type(True):
-                    await ctx.send("⚠ **| Could not download song. Make sure it's not a livestream.**")
+                voice_channel = ctx.author.voice.channel
+                if voice_channel is None:
+                    # you need to be connected so that the bot knows where to go
+                    await ctx.send("⚠ **| Connect to a voice channel!**")
                 else:
-                    embed = discord.Embed(
-                        title="Added to queue", description="**{}**\n`{:0>8}`".format(song['title'], str(timedelta(seconds=song['duration']))), color=0xFF9F26)
-                    embed.set_thumbnail(
-                        url=f"{song['thumb']}")
-                    await ctx.send(embed=embed)
-                    print(song['duration'])
-                    print("{:0>8}".format(
-                        str(timedelta(seconds=song['duration']))))
+                    song = self.search_yt(query)
+                    if type(song) == type(True):
+                        await ctx.send("⚠ **| Could not download song. Make sure it's not a livestream.**")
+                    else:
+                        embed = discord.Embed(
+                            title="Added to queue", description="**{}**\n`{:0>8}`".format(song['title'], str(timedelta(seconds=song['duration']))), color=0x006ce0)
+                        embed.set_thumbnail(
+                            url=f"{song['thumb']}")
+                        await ctx.send(embed=embed)
+                        print(song['duration'])
+                        print("{:0>8}".format(
+                            str(timedelta(seconds=song['duration']))))
 
-                    self.music_queue.append(
-                        [song, voice_channel, ctx.author.id])
+                        self.music_queue.append(
+                            [song, voice_channel, ctx.author.id])
 
-                    if self.is_playing == False:
-                        await self.play_music()
+                        if self.is_playing == False:
+                            await self.play_music()
         except UnexpectedQuoteError as e:
             await ctx.send(f"Something went wrong: {e}")
+
+    @commands.command(name="song", aliases=['searchsong'])
+    @commands.guild_only()
+    async def song(self, ctx, *args):
+        query = " ".join(args)
+        song = self.search_yt(query)
+        if type(song) == type(True):
+            await ctx.send("⚠ **| Could not download song. Make sure it's not a livestream.**")
+        else:
+            embed = discord.Embed(
+                title="Song search:", description="**{}**\n`{:0>8}`".format(song['title'], str(timedelta(seconds=song['duration']))), url=f"{song['webpage_url']}", color=0x006ce0)
+            embed.set_thumbnail(
+                url=f"{song['thumb']}")
+            await ctx.send(embed=embed)
 
     @commands.command(name="showtime")
     @commands.guild_only()
@@ -170,32 +168,34 @@ class Radio(commands.Cog, name='Radio'):
     @commands.group(name="queue", aliases=['q', 'songlist'], invoke_without_command=True)
     @commands.guild_only()
     async def q(self, ctx):
-        retval = ""
-        for i in range(0, len(self.music_queue)):
-            retval += f"`{i+1}` " + self.music_queue[i][0]['title'] + " **|** `{:0>8}`".format(
-                str(timedelta(seconds=self.music_queue[i][0]['duration']))) + "\n"
+        if ctx.guild.id in authservers:
+            retval = ""
+            for i in range(0, len(self.music_queue)):
+                retval += f"`{i+1}` " + self.music_queue[i][0]['title'] + " **|** `{:0>8}`".format(
+                    str(timedelta(seconds=self.music_queue[i][0]['duration']))) + "\n"
 
-        # print(retval)
-        if retval != "":
-            embed = discord.Embed(
-                title="Queue", color=0xFF9F26)
-            embed.set_thumbnail(
-                url="https://i.imgur.com/oijI9GJ.png")
-            embed.add_field(name="Songs:", value=retval, inline=False)
-            embed.set_footer(
-                text="Use \"-queue remove [number]\" to remove a song.")
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("⚠ **| No music in queue**")
+            # print(retval)
+            if retval != "":
+                embed = discord.Embed(
+                    title="Queue", color=0x006ce0)
+                embed.set_thumbnail(
+                    url="https://i.imgur.com/oijI9GJ.png")
+                embed.add_field(name="Songs:", value=retval, inline=False)
+                embed.set_footer(
+                    text="Use \"-queue remove [number]\" to remove a song.")
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("⚠ **| No music in queue**")
 
     @q.command()
     async def remove(self, ctx, index: int):
-        if self.music_queue[index - 1][2] == ctx.author.id:
-            name = self.music_queue[index - 1][0]['title']
-            self.music_queue.pop(index - 1)
-            await ctx.send(f"<:check_pine:834872371281264661> **| Removed** `{name}` **from the queue.**")
-        else:
-            await ctx.send("⚠ **| Someone else added this song.**")
+        if ctx.guild.id in authservers:
+            if self.music_queue[index - 1][2] == ctx.author.id:
+                name = self.music_queue[index - 1][0]['title']
+                self.music_queue.pop(index - 1)
+                await ctx.send(f"<:check_pine:834872371281264661> **| Removed** `{name}` **from the queue.**")
+            else:
+                await ctx.send("⚠ **| Someone else added this song.**")
 
     @commands.cooldown(1, 2, commands.BucketType.guild)
     @commands.has_permissions(manage_messages=True)
@@ -203,14 +203,15 @@ class Radio(commands.Cog, name='Radio'):
     @commands.guild_only()
     async def forceskip(self, ctx):
         try:
-            if self.vc != "" and self.vc:
-                if self.nowplaying == "":
-                    await ctx.send("⚠ **| Nothing is being played**")
-                else:
-                    self.vc.stop()
-                    # try to play next in the queue if it exists
-                    await self.play_music()
-                    await ctx.send("<:skip:844309432682807377> **| Skipped**")
+            if ctx.guild.id in authservers:
+                if self.vc != "" and self.vc:
+                    if self.nowplaying == "":
+                        await ctx.send("⚠ **| Nothing is being played**")
+                    else:
+                        self.vc.stop()
+                        # try to play next in the queue if it exists
+                        await self.play_music()
+                        await ctx.send("<:skip:844309432682807377> **| Skipped**")
         except:
             pass
 
@@ -218,52 +219,55 @@ class Radio(commands.Cog, name='Radio'):
     @commands.guild_only()
     @commands.command(name="np", aliases=['nowplaying', 'currentsong'])
     async def np(self, ctx):
-        if self.nowplaying == "":
-            await ctx.send("⚠ **| Nothing is being played**")
-        else:
-            embed = discord.Embed(
-                title="Now Playing:", color=0xFF9F26)
-            embed.set_thumbnail(
-                url=f"{self.nowplayingimg}")
-            embed.add_field(
-                name="** **", value=f"<a:playing:844309432699060266> **{self.nowplaying}**\n`{str(timedelta(seconds=(math.floor(time.time()) - self.starttime)))} - {str(timedelta(seconds=self.duration))}`", inline=False)
-            await ctx.send(embed=embed)
+        if ctx.guild.id in authservers:
+            if self.nowplaying == "":
+                await ctx.send("⚠ **| Nothing is being played**")
+            else:
+                embed = discord.Embed(
+                    title="Now Playing:", color=0x006ce0)
+                embed.set_thumbnail(
+                    url=f"{self.nowplayingimg}")
+                embed.add_field(
+                    name="** **", value=f"<a:playing:844309432699060266> **{self.nowplaying}**\n`{str(timedelta(seconds=(math.floor(time.time()) - self.starttime)))} - {str(timedelta(seconds=self.duration))}`", inline=False)
+                await ctx.send(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.command(name="skip", aliases=['s'])
     async def skip(self, ctx):
         try:
+            if ctx.guild.id in authservers:
 
-            if self.vc != "" and self.vc:
-                if ctx.author.id in self.voteskip:
-                    await ctx.send("⚠ **| You already voted to skip**")
-                else:
-                    if self.nowplaying == "":
-                        await ctx.send("⚠ **| Nothing is being played**")
+                if self.vc != "" and self.vc:
+                    if ctx.author.id in self.voteskip:
+                        await ctx.send("⚠ **| You already voted to skip**")
                     else:
-                        self.voteskip.append(ctx.author.id)
-                        if len(self.voteskip) >= math.floor(len(ctx.author.voice.channel.members) / 1.5):
-                            self.vc.stop()
-                            # try to play next in the queue if it exists
-                            await self.play_music()
-                            await ctx.send("<:skip:844309432682807377> **| Skipped**")
+                        if self.nowplaying == "":
+                            await ctx.send("⚠ **| Nothing is being played**")
                         else:
-                            await ctx.send(f"<:skip:844309432682807377> **| {len(self.voteskip)} / {math.floor(len(ctx.author.voice.channel.members) / 1.5)}**")
+                            self.voteskip.append(ctx.author.id)
+                            if len(self.voteskip) >= math.floor(len(ctx.author.voice.channel.members) / 1.5):
+                                self.vc.stop()
+                                # try to play next in the queue if it exists
+                                await self.play_music()
+                                await ctx.send("<:skip:844309432682807377> **| Skipped**")
+                            else:
+                                await ctx.send(f"<:skip:844309432682807377> **| {len(self.voteskip)} / {math.floor(len(ctx.author.voice.channel.members) / 1.5)}**")
         except:
             pass
 
     @commands.command()
     @commands.guild_only()
     async def join(self, ctx):
-        channel = ctx.message.author.voice.channel
-        try:
-            await channel.connect()
-            await ctx.message.reply(f"🔊 **| Connected to {channel.mention}.**")
-            self.nowplaying = ""
-            self.nowplayingimg = ""
-        except:
-            await ctx.message.reply("⚠ **| Already connected to voice.**")
+        if ctx.guild.id in authservers:
+            channel = ctx.message.author.voice.channel
+            try:
+                await channel.connect()
+                await ctx.message.reply(f"🔊 **| Connected to {channel.mention}.**")
+                self.nowplaying = ""
+                self.nowplayingimg = ""
+            except:
+                await ctx.message.reply("⚠ **| Already connected to voice.**")
 
     @commands.command()
     @commands.guild_only()
@@ -302,53 +306,57 @@ class Radio(commands.Cog, name='Radio'):
     @commands.command()
     @commands.guild_only()
     async def resume(self, ctx):
-        global player
-        try:
-            player.resume()
-            await ctx.send("<:play:844309432887803975> **| Resumed the music**")
-        except:
-            pass
-        try:
-            self.vc.resume()
-            await ctx.send("<:play:844309432887803975> **| Resumed the music**")
-        except:
-            pass
+        if ctx.guild.id in authservers:
+            global player
+            try:
+                player.resume()
+                await ctx.send("<:play:844309432887803975> **| Resumed the music**")
+            except:
+                pass
+            try:
+                self.vc.resume()
+                await ctx.send("<:play:844309432887803975> **| Resumed the music**")
+            except:
+                pass
 
     @commands.command()
     @commands.guild_only()
     async def pause(self, ctx):
-        global player
-        try:
-            player.pause()
-            await ctx.send("<:pause:844309432669306931> **| Paused the music**")
-        except:
-            pass
-        try:
-            self.vc.pause()
-            await ctx.send("<:pause:844309432669306931> **| Paused the music**")
-        except:
-            pass
+        if ctx.guild.id in authservers:
+            global player
+            try:
+                player.pause()
+                await ctx.send("<:pause:844309432669306931> **| Paused the music**")
+            except:
+                pass
+            try:
+                self.vc.pause()
+                await ctx.send("<:pause:844309432669306931> **| Paused the music**")
+            except:
+                pass
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
     async def radio(self, ctx):
-        embed = discord.Embed(
-            title="Radio", description="Available radio channels:", color=0xFF9F26)
-        embed.set_thumbnail(
-            url="https://media.istockphoto.com/vectors/radio-flat-icon-vector-id905456552?b=1&k=6&m=905456552&s=612x612&w=0&h=AdeAoOa8OsCNS3AIQ_RWee5dS724XDrGhFtXF8QOSWM=")
-        embed.add_field(name="MNM", value="-radio mnm", inline=False)
-        embed.add_field(name="Q-Music", value="-radio qmusic", inline=False)
-        embed.add_field(name="Studio Brussel",
-                        value="-radio stubru", inline=False)
-        embed.add_field(name="NRJ", value="-radio nrj", inline=False)
-        embed.add_field(name="Top Radio",
-                        value="-radio topradio", inline=False)
-        embed.add_field(name="Radio 1",
-                        value="-radio radio1", inline=False)
-        embed.add_field(name="VRT Nieuws",
-                        value="-radio nieuws", inline=False)
-        embed.set_footer(text=f"{webs} | {ctx.author}")
-        await ctx.send(embed=embed)
+        if ctx.guild.id in authservers:
+            embed = discord.Embed(
+                title="Radio", description="Available radio channels:", color=0x006ce0)
+            embed.set_thumbnail(
+                url="https://media.istockphoto.com/vectors/radio-flat-icon-vector-id905456552?b=1&k=6&m=905456552&s=612x612&w=0&h=AdeAoOa8OsCNS3AIQ_RWee5dS724XDrGhFtXF8QOSWM=")
+            embed.add_field(name="MNM", value="-radio mnm", inline=False)
+            embed.add_field(
+                name="Q-Music", value="-radio qmusic", inline=False)
+            embed.add_field(name="Studio Brussel",
+                            value="-radio stubru", inline=False)
+            embed.add_field(name="NRJ", value="-radio nrj", inline=False)
+            embed.add_field(name="Top Radio",
+                            value="-radio topradio", inline=False)
+            embed.add_field(name="Radio 1",
+                            value="-radio radio1", inline=False)
+            embed.add_field(name="VRT Nieuws",
+                            value="-radio nieuws", inline=False)
+            embed.set_footer(text=f"{webs} | {ctx.author}")
+            await ctx.send(embed=embed)
 
     @radio.command()
     @commands.guild_only()

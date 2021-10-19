@@ -125,7 +125,7 @@ class Economy(commands.Cog, name='Economy'):
                     num = round(num / 1000.0, round_to)
                 return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
         if ctx.author.id == person.id:
-            await ctx.send("⚠ **| You can't donate to yourself!**")
+            await ctx.send("<a:no:898507018527211540> **| You can't donate to yourself!**")
         else:
             db = sqlite3.connect('cogs/main.sqlite')
             cursor = db.cursor()
@@ -152,7 +152,7 @@ class Economy(commands.Cog, name='Economy'):
                 await ctx.send(embed=embed)
 
             else:
-                await ctx.message.reply("⚠ **| You don't have enough silver!**")
+                await ctx.message.reply("<a:no:898507018527211540> **| You don't have enough silver!**")
             cursor.close()
             db.close()
 
@@ -178,7 +178,7 @@ class Economy(commands.Cog, name='Economy'):
             if amount.lower() == "all":
                 amount = result[2]
             if result is None:
-                await ctx.message.reply("⚠ **| You don't have any silver!**")
+                await ctx.message.reply("<a:no:898507018527211540> **| You don't have any silver!**")
             elif int(amount) <= result[2]:
 
                 flip = random.choice(["Heads", "Tails"])
@@ -208,7 +208,7 @@ class Economy(commands.Cog, name='Economy'):
                         cursor.execute(sql, val)
                         db.commit()
                     else:
-                        await ctx.send("⚠ **| Choose between 'tails' and 'heads'**")
+                        await ctx.send("<a:no:898507018527211540> **| Choose between 'tails' and 'heads'**")
 
                 else:
                     if choice.lower() == "heads":
@@ -237,10 +237,10 @@ class Economy(commands.Cog, name='Economy'):
                         db.commit()
 
                     else:
-                        await ctx.send("⚠ **| Choose between 'tails' and 'heads'**")
+                        await ctx.send("<a:no:898507018527211540> **| Choose between 'tails' and 'heads'**")
 
             else:
-                await ctx.message.reply("⚠ **| You don't have enough silver!**")
+                await ctx.message.reply("<a:no:898507018527211540> **| You don't have enough silver!**")
         except:
             pass
         cursor.close()
@@ -314,7 +314,7 @@ class Economy(commands.Cog, name='Economy'):
             f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
         if result is None:
-            await ctx.message.reply("⚠ **| You don't have any silver!**")
+            await ctx.message.reply("<a:no:898507018527211540> **| You don't have any silver!**")
             cursor.close()
             db.close()
             return
@@ -323,7 +323,7 @@ class Economy(commands.Cog, name='Economy'):
             f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} AND user = {user.id}")
         result1 = cursor.fetchone()
         if result1 is None:
-            await ctx.message.reply(f"⚠ **| {user} doesn't have any silver!**")
+            await ctx.message.reply(f"<a:no:898507018527211540> **| {user} doesn't have any silver!**")
             cursor.close()
             db.close()
             return
@@ -459,18 +459,18 @@ class Economy(commands.Cog, name='Economy'):
             result = cursor.fetchone()
 
             if amount == None:
-                await ctx.send("⚠ **| Please enter an amount.**")
+                await ctx.send("<a:no:898507018527211540> **| Please enter an amount.**")
                 return
 
             if amount.lower() == "all":
                 amount = result[2]
 
             if int(amount) < 10:
-                await ctx.send("⚠ **| Your bet must be at least 10 silver.**")
+                await ctx.send("<a:no:898507018527211540> **| Your bet must be at least 10 silver.**")
                 return
 
             if result is None:
-                await ctx.send("⚠ **| You don't have enough silver!**")
+                await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
                 cursor.close()
                 db.close()
                 return
@@ -479,12 +479,12 @@ class Economy(commands.Cog, name='Economy'):
 
             amount = int(amount)
             if amount > bal:
-                await ctx.send("⚠ **| You don't have enough silver!**")
+                await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
                 cursor.close()
                 db.close()
                 return
             if amount < 0:
-                await ctx.send("⚠ **| Amount should always be positive**")
+                await ctx.send("<a:no:898507018527211540> **| Amount should always be positive**")
                 cursor.close()
                 db.close()
                 return
@@ -573,7 +573,7 @@ class Economy(commands.Cog, name='Economy'):
                 db.close()
                 return
         except:
-            await ctx.send("⚠ **| Please enter a valid amount.**")
+            await ctx.send("<a:no:898507018527211540> **| Please enter a valid amount.**")
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command()
@@ -587,13 +587,13 @@ class Economy(commands.Cog, name='Economy'):
         result = cursor.fetchone()
 
         if result is None:
-            await ctx.send("⚠ **| You don't have enough silver!**")
+            await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
             cursor.close()
             db.close()
             return
 
         if int(result[2]) < 50:
-            await ctx.send("⚠ **| You should have at least 50 silver to play.**")
+            await ctx.send("<a:no:898507018527211540> **| You should have at least 50 silver to play.**")
             cursor.close()
             db.close()
             return
@@ -650,7 +650,7 @@ class Economy(commands.Cog, name='Economy'):
             except:
                 await msg.delete()
                 await ctx.message.delete()
-                error = await ctx.send("⚠ **| Time exceeded**")
+                error = await ctx.send("<a:no:898507018527211540> **| Time exceeded**")
                 await asyncio.sleep(3)
                 await error.delete()
 
@@ -664,13 +664,13 @@ class Economy(commands.Cog, name='Economy'):
         result = cursor.fetchone()
 
         if result is None:
-            await ctx.send("⚠ **| You don't have enough silver!**")
+            await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
             cursor.close()
             db.close()
             return
 
         if int(result[2]) < 200:
-            await ctx.send("⚠ **| You should have at least 200 silver to play.**")
+            await ctx.send("<a:no:898507018527211540> **| You should have at least 200 silver to play.**")
             cursor.close()
             db.close()
             return
@@ -761,12 +761,14 @@ class Economy(commands.Cog, name='Economy'):
                     embed.set_thumbnail(url="https://i.imgur.com/2w2lkHO.png")
                     embed.set_footer(text=f"{webs} | {ctx.author}")
                     await ctx.send(embed=embed)
+                    cursor.close()
+                    db.close()
                 else:
-                    await ctx.send("⚠ **| You don't have enough silver!**")
+                    await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
             else:
-                await ctx.send("⚠ **| You already have a mining rig!**")
+                await ctx.send("<a:no:898507018527211540> **| You already have a mining rig!**")
         else:
-            await ctx.send("⚠ **| Please enter a valid item!**")
+            await ctx.send("<a:no:898507018527211540> **| Please enter a valid item!**")
 
     @commands.command(aliases=['inv'])
     @commands.guild_only()
@@ -783,51 +785,115 @@ class Economy(commands.Cog, name='Economy'):
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT silver, minerig FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+            f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
         embed = discord.Embed(
             title="Inventory", description=f"**Balance:** <:silver:856609576459304961> {kform(result[0])}", color=0x0068d6)
         if result[1] == 1:
             embed.add_field(
-                name="<:pinebulldozer:873214898656665652> Mining machine", value="Collects silver for you (collectable every 8h)\n`-machine`")
+                name=f"<:pinebulldozer:873214898656665652> Mining machine `Level {result[2]}`", value="Collects silver for you (collectable every 8h)\n`-machine`")
         embed.set_thumbnail(url="https://i.imgur.com/PEsgp8j.png")
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
+        cursor.close()
+        db.close()
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
     async def machine(self, ctx):
-        embed = discord.Embed(title="Mining machine",
-                              description=f"The mining machine mines silver for you. You can collect it's silver every 8 hours.", color=0x0068d6)
-        embed.add_field(
-            name="** **", value="Use `-machine collect` to claim your reward.")
-        embed.set_thumbnail(url="https://i.imgur.com/2w2lkHO.png")
-        embed.set_footer(text=f"{webs} | {ctx.author}")
-        await ctx.send(embed=embed)
+        def kform(num, round_to=2):
+            if abs(num) < 1000:
+                return num
+            else:
+                magnitude = 0
+                while abs(num) >= 1000:
+                    magnitude += 1
+                    num = round(num / 1000.0, round_to)
+                return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+        result = cursor.fetchone()
+        needed = 2500 + 750 * int(result[2]) + \
+            100 * int(result[2]) * int(result[2])
+        cursor.close()
+        db.close()
+        if int(result[1]) == 1:
+            embed = discord.Embed(title="Mining machine",
+                                  description=f"`Level {result[2]}`\n**Upgrade price:** <:silver:856609576459304961>`{kform(needed)}`", color=0x0068d6)
+            embed.add_field(
+                name="** **", value="`-machine collect` to claim your reward.\n`-machine upgrade` to upgrade your machine.")
+            embed.set_thumbnail(url="https://i.imgur.com/2w2lkHO.png")
+            embed.set_footer(text=f"{webs} | {ctx.author}")
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("<a:no:898507018527211540> **| You don't have a mining rig!**")
 
     @machine.command()
     @commands.cooldown(1, 28800, commands.BucketType.user)
     @commands.guild_only()
     async def collect(self, ctx):
+        def kform(num, round_to=2):
+            if abs(num) < 1000:
+                return num
+            else:
+                magnitude = 0
+                while abs(num) >= 1000:
+                    magnitude += 1
+                    num = round(num / 1000.0, round_to)
+                return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
         reward = random.randint(500, 900)
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT silver, minerig FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+            f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
+        levelboost = (int(result[2]) / 10) * reward
+        totalreward = round(levelboost + reward)
         if result[1] == 1:
             sql = (
                 "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
-            val = (reward, ctx.guild.id, ctx.author.id)
+            val = (totalreward, ctx.guild.id, ctx.author.id)
             cursor.execute(sql, val)
             db.commit()
             embed = discord.Embed(title="Mining machine reward",
-                                  description=f"You have collected **<:silver:856609576459304961> {reward}**.", color=0x00FF00)
+                                  description=f"You have collected **<:silver:856609576459304961> {kform(totalreward)}**.", color=0x00FF00)
+            print(f"reward: {reward}, boost: {levelboost}")
             embed.set_thumbnail(url="https://i.imgur.com/2w2lkHO.png")
             embed.set_footer(text=f"{webs} | {ctx.author}")
             await ctx.send(embed=embed)
         else:
-            await ctx.send("⚠ **| You don't have a mining rig!**")
+            await ctx.send("<a:no:898507018527211540> **| You don't have a mining rig!**")
+
+    @machine.command()
+    @commands.guild_only()
+    async def upgrade(self, ctx):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+        result = cursor.fetchone()
+        needed = int(2500 + 750 * int(result[2]) +
+                           100 * int(result[2]) * int(result[2]))
+        if needed < int(result[0]):
+            sql = (
+                "UPDATE economy SET silver = silver - ?, mineriglvl = mineriglvl + 1 where guild = ? and user = ?")
+            val = (needed, ctx.guild.id, ctx.author.id)
+            cursor.execute(sql, val)
+            db.commit()
+            embed = discord.Embed(title="You have upgraded your mining machine!",
+                                  description=f"Your mining machine is now `Level {int(result[2])+1}`", color=0x00FF00)
+            embed.set_thumbnail(url="https://i.imgur.com/2w2lkHO.png")
+            embed.set_footer(text=f"{webs} | {ctx.author}")
+            await ctx.send(embed=embed)
+            return
+        elif int(result[1]) == 0:
+            await ctx.send("<a:no:898507018527211540> **| You don't have a mining rig!**")
+            return
+        else:
+            await ctx.send("<a:no:898507018527211540> **| You don't have a enough silver!**")
+            return
 
     @commands.command(enabled=False)
     @commands.guild_only()

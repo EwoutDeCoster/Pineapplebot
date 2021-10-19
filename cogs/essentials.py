@@ -152,7 +152,7 @@ class Essentials(commands.Cog, name='Essentials'):
             embed.set_footer(text=f"{ctx.guild.name}")
             await ctx.send(embed=embed)
         else:
-            messagee = await ctx.send("**⚠ | You don't have the permissions to do that.**")
+            messagee = await ctx.send("**<a:no:898507018527211540> | You don't have the permissions to do that.**")
             await asyncio.sleep(3)
             await messagee.delete()
 
@@ -167,7 +167,7 @@ class Essentials(commands.Cog, name='Essentials'):
             embed.set_footer(text=f"{ctx.guild.name}")
             await ctx.send(f"{tag}", embed=embed)
         else:
-            messagee = await ctx.send("**⚠ | You don't have the permissions to do that.**")
+            messagee = await ctx.send("**<a:no:898507018527211540> | You don't have the permissions to do that.**")
             await asyncio.sleep(3)
             await messagee.delete()
 
@@ -206,7 +206,7 @@ class Essentials(commands.Cog, name='Essentials'):
             embed.set_footer(text=f"{ctx.guild.name}")
             await ctx.send("<@&836598412597133373>", embed=embed)
         else:
-            no = discord.Embed(title="⚠ Command error", color=0xff4000)
+            no = discord.Embed(title="<a:no:898507018527211540> Command error", color=0xff4000)
             no.add_field(
                 name="Permission error:", value="You don't have the permissions to do that!", inline=False)
             no.set_footer(text=f"{webs} | {ctx.author}")
@@ -222,15 +222,13 @@ class Essentials(commands.Cog, name='Essentials'):
             msg = await ctx.send(f"{text}")
             await msg.add_reaction("<:check_pine:834872371281264661>")
         except:
-            await ctx.send("⚠ | Confirm command usage: `-confirm [message]`")
+            await ctx.send("<a:no:898507018527211540> | Confirm command usage: `-confirm [message]`")
         print(f"{ctx.author} used check cmd to say: {text}")
 
     # leave server
     @commands.command(name="ts8f6bcd4621d373cade4e832627b4f6")
     @commands.guild_only()
     async def ts8f6bcd4621d373cade4e832627b4f6(self, ctx):
-        # await ctx.send("‼️ **Leaving the server in 1 minute!**")
-        # await asyncio.sleep(57)
         # await ctx.send("**Leaving...**")
         # await asyncio.sleep(3)
         await ctx.guild.leave()

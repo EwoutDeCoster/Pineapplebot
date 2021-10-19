@@ -30,7 +30,7 @@ class Poll(commands.Cog, name='Poll'):
     async def create_poll(self, ctx, question: str, *options):
         if len(options) > 10:
             await ctx.message.delete()
-            msg = await ctx.send("⚠ You can only add a maximum of 10 options!")
+            msg = await ctx.send("<a:no:898507018527211540> You can only add a maximum of 10 options!")
             await asyncio.sleep(3)
             await msg.delete()
 
@@ -60,7 +60,7 @@ class Poll(commands.Cog, name='Poll'):
         try:
             if "@everyone" in text or "@here" in text or "@someone" in text and not ctx.author.guild_permissions.manage_messages:
                 await ctx.message.delete()
-                await ctx.author.send(f"⚠ | You can't mention @everyone in **{ctx.guild.name}**!")
+                await ctx.author.send(f"<a:no:898507018527211540> | You can't mention @everyone in **{ctx.guild.name}**!")
             else:
                 message = ctx.message
                 await message.delete()
@@ -137,7 +137,7 @@ class Poll(commands.Cog, name='Poll'):
                 f"SELECT id, guild, user, message, msgid FROM suggestions WHERE guild = {ctx.author.guild.id} AND id = \"{sid}\"")
             result1 = cursor.fetchone()
             if result1 is None:
-                err = await ctx.send("⚠ **| No message with this sID.**")
+                err = await ctx.send("<a:no:898507018527211540> **| No message with this sID.**")
                 await asyncio.sleep(3)
                 await err.delete()
                 return

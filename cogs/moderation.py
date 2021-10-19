@@ -51,7 +51,7 @@ class Moderation(commands.Cog, name='Moderation'):
             directmsg.set_footer(text=f"{webs} | Moderator: {ctx.author}")
             await member.send(embed=directmsg)
         except:
-            await ctx.send(f"⚠ | Member {member} could not be banned")
+            await ctx.send(f"<a:no:898507018527211540> | Member {member} could not be banned")
 
         cursor.close()
         db.close()
@@ -95,7 +95,7 @@ class Moderation(commands.Cog, name='Moderation'):
             await member.kick(reason=reason)
             print(f'{member} got kicked for {reason}')
         except:
-            await ctx.send("⚠ | Failed to kick that member.")
+            await ctx.send("<a:no:898507018527211540> | Failed to kick that member.")
 
     @commands.command()
     @commands.guild_only()
@@ -350,6 +350,33 @@ class Moderation(commands.Cog, name='Moderation'):
                 await ctx.send(f"⏱ **| This channel is now in slowmode! You can now send messages every `{seconds}` seconds**.")
         except:
             await ctx.send("⚠ **| The argument should be a number!**")
+
+    @commands.has_permissions(kick_members=True)
+    @commands.command()
+    @commands.guild_only()
+    async def pineserver(self, ctx):
+        if ctx.guild.id == 456754639031762944:
+            embed = discord.Embed(
+                title="⚙️ Pineapple server", description="The Pineapple server control commands", color=0x006ce0)
+            embed.add_field(name="-mod user [user]",
+                            value="Send someone the mod commands", inline=False)
+            embed.set_image(url=f"{ctx.guild.icon_url}")
+            embed.set_footer(
+                text=f"Pineapple moderation commands")
+            await ctx.send(embed=embed)
+
+    @commands.has_permissions(kick_members=True)
+    @commands.command()
+    @commands.guild_only()
+    async def mod(self, ctx, usr: discord.Member):
+        embed = discord.Embed(
+            title="🎉 Moderator Promotion", description=f"You have been promoted to Moderator in **{ctx.guild.name}**!", color=0x006ce0)
+        embed.add_field(name="New available commands:",
+                        value="`-slowmode [seconds | disable]`\n`-clear [number]`\n`-ban [user] (optional: [reason])`\n`-kick [user] (optional: [reason])`\n`-warn [user] (optional: [reason])`\n`-warnings [user]`", inline=False)
+        embed.set_thumbnail(url=f"{ctx.guild.icon_url}")
+        embed.set_footer(
+            text=f"Pineapple moderation commands")
+        await usr.send(embed=embed)
 
 
 def setup(client):

@@ -18,6 +18,7 @@ import json
 
 # Pre made: dev, prob
 statuss = "-help | Pineapplebot.ga"
+webs = "Pineapplebot.ga"
 
 load_dotenv()
 TOKEN = os.getenv('BOTTOKEN')
@@ -85,7 +86,13 @@ async def on_guild_join(guild):
     index = 0
     while not success:
         try:
-            await guild.channels[index].send("<:pineapple:801483957228011550> **| Thanks for inviting Pineapple to the server!\nType `-help` to get started!**.")
+            embed = discord.Embed(
+            title="Pineapple", description="Thanks for inviting pineapple to the server!", color=0x0a4d8b)
+            embed.add_field(
+            name="** **", value="See all commands [here](https://www.pineapplebot.ga/commands).")
+            embed.set_thumbnail(url="https://i.imgur.com/rjxnHHM.png")
+            embed.set_footer(text=f"{webs}")
+            await guild.channels[index].send(embed=embed)
         except discord.Forbidden:
             index += 1
         except AttributeError:
@@ -206,7 +213,7 @@ async def setbotstatus(ctx, *, st):
         msg = await ctx.send(f"🤖 | The bot status has changed to \"**{st}**\"")
 
     else:
-        msg = await ctx.send(f"**⚠ | {ctx.author.mention} You don't have the perms to do that**")
+        msg = await ctx.send(f"**<a:no:898507018527211540> | {ctx.author.mention} You don't have the perms to do that**")
         await asyncio.sleep(3)
         await msg.delete()
 
@@ -216,24 +223,24 @@ async def on_command_error(ctx, Exc):
     if isinstance(Exc, commands.CommandNotFound):
         return
     if isinstance(Exc, commands.MissingRequiredArgument):
-        await ctx.send("⚠ **| Missing required argument.**")
+        await ctx.send("<a:no:898507018527211540> **| Missing required argument.**")
         return
     if isinstance(Exc, commands.BadArgument):
-        await ctx.send("⚠ **| Bad argument.**")
+        await ctx.send("<a:no:898507018527211540> **| Bad argument.**")
         return
     if isinstance(Exc, commands.DisabledCommand):
-        await ctx.send("⚠ **| Command is disabled.**")
+        await ctx.send("<a:no:898507018527211540> **| Command is disabled.**")
         return
     if isinstance(Exc, commands.NoPrivateMessage):
         return
     if isinstance(Exc, commands.BotMissingRole):
         print(
-            f"⚠ **| I don't have te perms to do that. Missing the following perms:** `{Exc}`")
+            f"<a:no:898507018527211540> **| I don't have te perms to do that. Missing the following perms:** `{Exc}`")
         return
     if isinstance(Exc, discord.errors.Forbidden):
         return
     if isinstance(Exc, commands.errors.UnexpectedQuoteError):
-        await ctx.send("⚠ **| Unexpected Quote**")
+        await ctx.send("<a:no:898507018527211540> **| Unexpected Quote**")
         return
     if isinstance(Exc, commands.MissingPermissions):
         try:
@@ -244,7 +251,7 @@ async def on_command_error(ctx, Exc):
                     "**, **".join(missing[:-1]), missing[-1])
             else:
                 fmt = ' and '.join(missing)
-            _message = '⚠ **| You need the** `{}` **permission(s) to use this command.**'.format(
+            _message = '<a:no:898507018527211540> **| You need the** `{}` **permission(s) to use this command.**'.format(
                 fmt)
             await ctx.send(_message)
             return
@@ -254,15 +261,15 @@ async def on_command_error(ctx, Exc):
         try:
             if Exc.retry_after > 86400:
                 remaining = math.floor(Exc.retry_after / 86400)
-                await ctx.send(f"⚠ **| This command is on cooldown, please retry in** `{remaining}d`.**")
+                await ctx.send(f"<a:hourglass:898511862075904061> **| This command is on cooldown, please retry in** `{remaining}d`.**")
             elif Exc.retry_after > 3600:
                 remaining = math.floor(Exc.retry_after / 3600)
-                await ctx.send(f"⚠ **| This command is on cooldown, please retry in `{remaining}h`.**")
+                await ctx.send(f"<a:hourglass:898511862075904061> **| This command is on cooldown, please retry in `{remaining}h`.**")
             elif Exc.retry_after > 60:
                 remaining = math.floor(Exc.retry_after / 60)
-                await ctx.send(f"⚠ **| This command is on cooldown, please retry in `{remaining}m`.**")
+                await ctx.send(f"<a:hourglass:898511862075904061> **| This command is on cooldown, please retry in `{remaining}m`.**")
             else:
-                await ctx.send(f"⚠ **| This command is on cooldown, please retry in `{math.floor(Exc.retry_after)}s`.**")
+                await ctx.send(f"<a:hourglass:898511862075904061> **| This command is on cooldown, please retry in `{math.floor(Exc.retry_after)}s`.**")
             return
         except:
             pass
@@ -275,17 +282,16 @@ async def on_command_error(ctx, Exc):
                     "**, **".join(missing[:-1]), missing[-1])
             else:
                 fmt = ' and '.join(missing)
-            _message = '⚠ **| I need the `{}` permission(s) to run this command.**'.format(
+            _message = '<a:no:898507018527211540> **| I need the `{}` permission(s) to run this command.**'.format(
                 fmt)
             await ctx.send(_message)
             return
         except:
             pass
     try:
-        msg = await ctx.send("⚠ **| An unknown error occured.**")
+        msg = await ctx.send("<a:no:898507018527211540> **| An unknown error occured.**")
     except:
         pass
-    print(f"{Exc}")
     raise Exc
 
 statsloop.start()
