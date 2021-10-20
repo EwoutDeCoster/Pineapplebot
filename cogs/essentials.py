@@ -362,6 +362,16 @@ class Essentials(commands.Cog, name='Essentials'):
         await ctx.message.delete()
         msg = await ctx.send(f"{message}")
         await msg.add_reaction('<:check_pine:834872371281264661>')
+    
+    @commands.command()
+    @commands.has_permissions(create_instant_invite=True)
+    async def serverinvite(self, ctx):
+        link = await ctx.channel.create_invite(max_age=21600, reason=f"{ctx.author} used the -serverinvite command.")
+        embed = discord.Embed(
+            title="📧 Server Invite", description=f"Your invite:\n\nhttps://pineapplebot.ga/serverinvite?invite={link}", color=0x0068d6)
+        embed.set_footer(text=f"{webs} | {ctx.author}")
+        await ctx.send(embed=embed)
+
 
 
 def setup(client):

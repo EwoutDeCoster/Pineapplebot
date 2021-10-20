@@ -403,8 +403,11 @@ class Info(commands.Cog, name='Info'):
     @commands.guild_only()
     async def profile(self, ctx):
         created_at = f"{ctx.author.created_at.strftime('%d/%m/%Y')}"
+        name = ctx.author.name
+        if " " in ctx.author.name:
+            name = ctx.author.name.replace(" ", "%20")
         embed = discord.Embed(
-            title="Profile", url=f"https://www.pineapplebot.ga/profile?&username={ctx.author.name}&createdon={created_at}&id={ctx.author.id}&discriminator={ctx.author.discriminator}&image={str(ctx.author.avatar_url)}", description=f"Go to your profile by clicking [here](https://www.pineapplebot.ga/profile?&username={ctx.author.name}&createdon={created_at}&id={ctx.author.id}&discriminator={ctx.author.discriminator}&image={str(ctx.author.avatar_url)}).", color=0x0a4d8b)
+            title="Profile", url=f"https://www.pineapplebot.ga/profile?&username={name}&createdon={created_at}&id={ctx.author.id}&discriminator={ctx.author.discriminator}&image={str(ctx.author.avatar_url)}",  description=f"Go to your profile by clicking [here](https://www.pineapplebot.ga/profile?&username={name}&createdon={created_at}&id={ctx.author.id}&discriminator={ctx.author.discriminator}&image={str(ctx.author.avatar_url)}).", color=0x0a4d8b)
         embed.set_thumbnail(url=ctx.author.avatar_url_as(size=256))
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.message.reply(embed=embed)
