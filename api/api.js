@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  res.status(200).json({ Test: "success" });
+  res.status(200).json({ status: "online" });
 });
 
 /*app.get("/all", async (req, res) => {

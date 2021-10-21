@@ -7,6 +7,7 @@ import urllib
 import requests
 import time
 import random
+from datetime import datetime, timedelta
 import sys
 import sqlite3
 from discord import Intents
@@ -87,9 +88,9 @@ async def on_guild_join(guild):
     while not success:
         try:
             embed = discord.Embed(
-            title="Pineapple", description="Thanks for inviting pineapple to the server!", color=0x0a4d8b)
+                title="Pineapple", description="Thanks for inviting pineapple to the server!", color=0x0a4d8b)
             embed.add_field(
-            name="** **", value="See all commands [here](https://www.pineapplebot.ga/commands).")
+                name="** **", value="See all commands [here](https://www.pineapplebot.ga/commands).")
             embed.set_thumbnail(url="https://i.imgur.com/rjxnHHM.png")
             embed.set_footer(text=f"{webs}")
             await guild.channels[index].send(embed=embed)
@@ -120,6 +121,46 @@ async def on_guild_join(guild):
         db.commit()
         cursor.close()
         db.close()
+
+# Delete data wanneer bot gekickt wordt.
+
+
+@client.event
+async def on_guild_remove(guild):
+    print(f"Got Kicked: {guild.name} | {guild.id}")
+    db = sqlite3.connect('cogs/main.sqlite')
+    cursor = db.cursor()
+    sql = ("DELETE FROM main WHERE guild_id = ?")
+    val = (guild.id)
+    cursor.execute(sql, val)
+
+    sql1 = ("DELETE FROM economy WHERE guild = ?")
+    val1 = (guild.id)
+    cursor.execute(sql1, val1)
+
+    sql2 = ("DELETE FROM leveling WHERE guild_id = ?")
+    val2 = (guild.id)
+    cursor.execute(sql2, val2)
+
+    sql3 = ("DELETE FROM reactionroles WHERE guild = ?")
+    val3 = (guild.id)
+    cursor.execute(sql3, val3)
+
+    sql4 = ("DELETE FROM starboard WHERE guild = ?")
+    val4 = (guild.id)
+    cursor.execute(sql4, val4)
+
+    sql5 = ("DELETE FROM suggestions WHERE guild = ?")
+    val5 = (guild.id)
+    cursor.execute(sql5, val5)
+
+    sql6 = ("DELETE FROM warnings WHERE guild = ?")
+    val6 = (guild.id)
+    cursor.execute(sql6, val6)
+
+    db.commit()
+    cursor.close()
+    db.close()
 
 
 @client.event
