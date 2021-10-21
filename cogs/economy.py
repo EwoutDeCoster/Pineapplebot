@@ -425,12 +425,12 @@ class Economy(commands.Cog, name='Economy'):
         result = cursor.fetchmany(5)
         i = 0
         embed = discord.Embed(title="Silver leaderboard",
-                              description=f"{ctx.guild.name}", color=0x0068d6)
-        while i < len(result):
-            username = self.client.get_user(int(result[i][1]))
-            embed.add_field(name=f"** **",
-                            value=f"**{i+1})** {username.mention}\n   <:silver:856609576459304961> **{kform(int(result[i][2]))}**", inline=False)
-            i += 1
+                              description=f"Visit the economy leaderboard [here](https://pineapplebot.ga/economy?guild={ctx.guild.id}).", color=0x0068d6)
+        #while i < len(result):
+        #    username = self.client.get_user(int(result[i][1]))
+        #    embed.add_field(name=f"** **",
+        #                    value=f"**{i+1})** {username.mention}\n   <:silver:856609576459304961> **{kform(int(result[i][2]))}**", inline=False)
+        #    i += 1
         embed.set_thumbnail(
             url="https://cdn.discordapp.com/emojis/856609576459304961.png?v=1")
         embed.set_footer(text=f"{webs} | {ctx.author}")

@@ -172,6 +172,11 @@ class Leveling(commands.Cog, name='Leveling'):
             cursor.execute(
                 f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{ctx.author.id}'")
             result = cursor.fetchone()
+            sql = (
+                "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+            val = (str(ctx.guild.icon_url), ctx.guild.id)
+            cursor.execute(sql, val)
+            db.commit()
             if result is None:
                 msg = await ctx.send("**📊 | That user is not ranked.**")
                 await asyncio.sleep(3)
@@ -229,136 +234,147 @@ class Leveling(commands.Cog, name='Leveling'):
         cursor.execute(
             f"SELECT lvl, exp, user FROM leveling WHERE guild_id = {ctx.guild.id} ORDER BY lvl DESC, exp DESC LIMIT 5")
         result = cursor.fetchmany(5)
-
-        if len(result) == 1:
-            lvl1 = int(result[0][0])
-            xp1 = int(result[0][1])
-            usr1 = self.client.get_user(int(result[0][2]))
-
+        sql = (
+                "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+        val = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
+        cursor.execute(sql, val)
+        db.commit()
+        if result is not None:
             embed = discord.Embed(title="Levels leaderboard",
                                   description=f"{ctx.guild.name}", color=0x0068d6)
-            embed.set_thumbnail(
-                url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
-            embed.add_field(
-                name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
+            embed.add_field(name="** **", value=f"Visit the leveling leaderboard [here](https://pineapplebot.ga/leveling.html?&guild={ctx.guild.id})")
             embed.set_footer(text=f"{webs} | {ctx.author}")
             await ctx.send(embed=embed)
 
-        if len(result) == 2:
-            lvl1 = int(result[0][0])
-            xp1 = int(result[0][1])
-            usr1 = self.client.get_user(int(result[0][2]))
-
-            lvl2 = int(result[1][0])
-            xp2 = int(result[1][1])
-            usr2 = self.client.get_user(int(result[1][2]))
-
-            embed = discord.Embed(title="Levels leaderboard",
-                                  description=f"{ctx.guild.name}", color=0x0068d6)
-            embed.set_thumbnail(
-                url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
-            embed.add_field(
-                name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
-            embed.set_footer(text=f"{webs} | {ctx.author}")
-            await ctx.send(embed=embed)
-
-        if len(result) == 3:
-            lvl1 = int(result[0][0])
-            xp1 = int(result[0][1])
-            usr1 = self.client.get_user(int(result[0][2]))
-
-            lvl2 = int(result[1][0])
-            xp2 = int(result[1][1])
-            usr2 = self.client.get_user(int(result[1][2]))
-
-            lvl3 = int(result[2][0])
-            xp3 = int(result[2][1])
-            usr3 = self.client.get_user(int(result[2][2]))
-
-            embed = discord.Embed(title="Levels leaderboard",
-                                  description=f"{ctx.guild.name}", color=0x0068d6)
-            embed.set_thumbnail(
-                url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
-            embed.add_field(
-                name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"3) {usr3}", value=f"**level:** {lvl3} \n**Experience:** {xp3}\n\n\n", inline=False)
-            embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
-            await ctx.send(embed=embed)
-
-        if len(result) == 4:
-            lvl1 = int(result[0][0])
-            xp1 = int(result[0][1])
-            usr1 = self.client.get_user(int(result[0][2]))
-
-            lvl2 = int(result[1][0])
-            xp2 = int(result[1][1])
-            usr2 = self.client.get_user(int(result[1][2]))
-
-            lvl3 = int(result[2][0])
-            xp3 = int(result[2][1])
-            usr3 = self.client.get_user(int(result[2][2]))
-
-            lvl4 = int(result[3][0])
-            xp4 = int(result[3][1])
-            usr4 = self.client.get_user(int(result[3][2]))
-
-            embed = discord.Embed(title="Levels leaderboard",
-                                  description=f"{ctx.guild.name}", color=0x0068d6)
-            embed.set_thumbnail(
-                url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
-            embed.add_field(
-                name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"3) {usr3}", value=f"**level:** {lvl3} \n**Experience:** {xp3}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"4) {usr4}", value=f"**level:** {lvl4} \n**Experience:** {xp4}\n\n\n", inline=False)
-            embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
-            await ctx.send(embed=embed)
-
-        if len(result) > 4:
-            lvl1 = int(result[0][0])
-            xp1 = int(result[0][1])
-            usr1 = self.client.get_user(int(result[0][2]))
-
-            lvl2 = int(result[1][0])
-            xp2 = int(result[1][1])
-            usr2 = self.client.get_user(int(result[1][2]))
-
-            lvl3 = int(result[2][0])
-            xp3 = int(result[2][1])
-            usr3 = self.client.get_user(int(result[2][2]))
-
-            lvl4 = int(result[3][0])
-            xp4 = int(result[3][1])
-            usr4 = self.client.get_user(int(result[3][2]))
-
-            lvl5 = int(result[4][0])
-            xp5 = int(result[4][1])
-            usr5 = self.client.get_user(int(result[4][2]))
-
-            embed = discord.Embed(title="Levels leaderboard",
-                                  description=f"{ctx.guild.name}", color=0x0068d6)
-            embed.set_thumbnail(
-                url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
-            embed.add_field(
-                name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"3) {usr3}", value=f"**level:** {lvl3} \n**Experience:** {xp3}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"4) {usr4}", value=f"**level:** {lvl4} \n**Experience:** {xp4}\n\n\n", inline=False)
-            embed.add_field(
-                name=f"5) {usr5}", value=f"**level:** {lvl5} \n**Experience:** {xp5}\n\n\n", inline=False)
-            embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
-            await ctx.send(embed=embed)
+        #if len(result) == 1:
+        #    lvl1 = int(result[0][0])
+        #    xp1 = int(result[0][1])
+        #    usr1 = self.client.get_user(int(result[0][2]))
+#
+        #    embed = discord.Embed(title="Levels leaderboard",
+        #                          description=f"{ctx.guild.name}", color=0x0068d6)
+        #    embed.set_thumbnail(
+        #        url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
+        #    embed.add_field(
+        #        name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
+        #    embed.set_footer(text=f"{webs} | {ctx.author}")
+        #    await ctx.send(embed=embed)
+#
+        #if len(result) == 2:
+        #    lvl1 = int(result[0][0])
+        #    xp1 = int(result[0][1])
+        #    usr1 = self.client.get_user(int(result[0][2]))
+#
+        #    lvl2 = int(result[1][0])
+        #    xp2 = int(result[1][1])
+        #    usr2 = self.client.get_user(int(result[1][2]))
+#
+        #    embed = discord.Embed(title="Levels leaderboard",
+        #                          description=f"{ctx.guild.name}", color=0x0068d6)
+        #    embed.set_thumbnail(
+        #        url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
+        #    embed.add_field(
+        #        name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
+        #    embed.set_footer(text=f"{webs} | {ctx.author}")
+        #    await ctx.send(embed=embed)
+#
+        #if len(result) == 3:
+        #    lvl1 = int(result[0][0])
+        #    xp1 = int(result[0][1])
+        #    usr1 = self.client.get_user(int(result[0][2]))
+#
+        #    lvl2 = int(result[1][0])
+        #    xp2 = int(result[1][1])
+        #    usr2 = self.client.get_user(int(result[1][2]))
+#
+        #    lvl3 = int(result[2][0])
+        #    xp3 = int(result[2][1])
+        #    usr3 = self.client.get_user(int(result[2][2]))
+#
+        #    embed = discord.Embed(title="Levels leaderboard",
+        #                          description=f"{ctx.guild.name}", color=0x0068d6)
+        #    embed.set_thumbnail(
+        #        url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
+        #    embed.add_field(
+        #        name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"3) {usr3}", value=f"**level:** {lvl3} \n**Experience:** {xp3}\n\n\n", inline=False)
+        #    embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
+        #    await ctx.send(embed=embed)
+#
+        #if len(result) == 4:
+        #    lvl1 = int(result[0][0])
+        #    xp1 = int(result[0][1])
+        #    usr1 = self.client.get_user(int(result[0][2]))
+#
+        #    lvl2 = int(result[1][0])
+        #    xp2 = int(result[1][1])
+        #    usr2 = self.client.get_user(int(result[1][2]))
+#
+        #    lvl3 = int(result[2][0])
+        #    xp3 = int(result[2][1])
+        #    usr3 = self.client.get_user(int(result[2][2]))
+#
+        #    lvl4 = int(result[3][0])
+        #    xp4 = int(result[3][1])
+        #    usr4 = self.client.get_user(int(result[3][2]))
+#
+        #    embed = discord.Embed(title="Levels leaderboard",
+        #                          description=f"{ctx.guild.name}", color=0x0068d6)
+        #    embed.set_thumbnail(
+        #        url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
+        #    embed.add_field(
+        #        name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"3) {usr3}", value=f"**level:** {lvl3} \n**Experience:** {xp3}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"4) {usr4}", value=f"**level:** {lvl4} \n**Experience:** {xp4}\n\n\n", inline=False)
+        #    embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
+        #    await ctx.send(embed=embed)
+#
+        #if len(result) > 4:
+        #    lvl1 = int(result[0][0])
+        #    xp1 = int(result[0][1])
+        #    usr1 = self.client.get_user(int(result[0][2]))
+#
+        #    lvl2 = int(result[1][0])
+        #    xp2 = int(result[1][1])
+        #    usr2 = self.client.get_user(int(result[1][2]))
+#
+        #    lvl3 = int(result[2][0])
+        #    xp3 = int(result[2][1])
+        #    usr3 = self.client.get_user(int(result[2][2]))
+#
+        #    lvl4 = int(result[3][0])
+        #    xp4 = int(result[3][1])
+        #    usr4 = self.client.get_user(int(result[3][2]))
+#
+        #    lvl5 = int(result[4][0])
+        #    xp5 = int(result[4][1])
+        #    usr5 = self.client.get_user(int(result[4][2]))
+#
+        #    embed = discord.Embed(title="Levels leaderboard",
+        #                          description=f"{ctx.guild.name}", color=0x0068d6)
+        #    embed.set_thumbnail(
+        #        url="https://www.freeiconspng.com/uploads/leaderboard-icon-3.png")
+        #    embed.add_field(
+        #        name=f"1) {usr1}", value=f"**level:** {lvl1} \n**Experience:** {xp1}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"2) {usr2}", value=f"**level:** {lvl2} \n**Experience:** {xp2}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"3) {usr3}", value=f"**level:** {lvl3} \n**Experience:** {xp3}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"4) {usr4}", value=f"**level:** {lvl4} \n**Experience:** {xp4}\n\n\n", inline=False)
+        #    embed.add_field(
+        #        name=f"5) {usr5}", value=f"**level:** {lvl5} \n**Experience:** {xp5}\n\n\n", inline=False)
+        #    embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
+        #    await ctx.send(embed=embed)
 
         cursor.close()
         db.close()

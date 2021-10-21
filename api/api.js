@@ -3,23 +3,27 @@ const app = express();
 const bodyParser = require("body-parser");
 const db = require("./db/leaderboard");
 const cors = require("cors");
-const https = require("https");
-const path = require("path");
-const fs = require("fs");
+/*const https = require("https"),
+  fs = require("fs");*/
 
 app.use(cors());
+/*
+const options = {
+  key: fs.readFileSync("/srv/www/keys/my-site-key.pem"),
+  cert: fs.readFileSync("/srv/www/keys/chain.pem")
+};*/
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({ Test: "success" });
 });
 
-app.get("/all", async (req, res) => {
+/*app.get("/all", async (req, res) => {
   const users = await db.getAll();
   res.status(200).json({ users });
-});
+});*/
 
 app.get("/leaderboard/:guild_id", async (req, res) => {
   const users = await db.getUsers(req.params.guild_id, req.body);
@@ -41,12 +45,5 @@ app.get("/bot/stats", async (req, res) => {
   res.status(200).json({ stats });
 });
 
-const sslServer = https.createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
-  },
-  app
-);
-
-sslServer.listen(1339, () => console.log("server is running on port 1339"));
+app.listen(80, () => console.log("server is running on port 80"));
+/*https.createServer(options, app).listen(443);*/

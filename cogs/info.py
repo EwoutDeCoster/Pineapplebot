@@ -607,6 +607,10 @@ class Info(commands.Cog, name='Info'):
                 name="🧮 Memory", value=f'{int(int(psutil.virtual_memory().total - psutil.virtual_memory().available) / 1024 / 1024)} Mb', inline=True)
             await ctx.send(embed=embed)
 
+    @commands.command()
+    async def getpic(self, ctx):
+        await ctx.send(f"{self.client.user.avatar_url}")
+
 
 def setup(client):
     client.add_cog(Info(client))

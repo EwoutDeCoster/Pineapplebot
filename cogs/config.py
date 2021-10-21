@@ -10,8 +10,6 @@ import requests
 import sys
 import sqlite3
 
-from cogs.starboard import Starboard
-
 webs = str("Pineapplebot.ga")
 
 
@@ -165,7 +163,8 @@ class Config(commands.Cog, name='Config'):
                 channell = ctx.guild.get_channel(int(getchannel[0]))
                 await channell.edit(name=f'Members: {ctx.guild.member_count}')
             except:
-                ctx.send("**<a:no:898507018527211540> | Could not update membercount**")
+                ctx.send(
+                    "**<a:no:898507018527211540> | Could not update membercount**")
             cursor.close()
             db.close()
         else:
@@ -410,7 +409,7 @@ class Config(commands.Cog, name='Config'):
         embed.set_footer(
             text=f"Starboard settings.")
         await ctx.send(embed=embed)
-    
+
     @starboard.command()
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
@@ -436,7 +435,7 @@ class Config(commands.Cog, name='Config'):
         db.commit()
         cursor.close()
         db.close()
-    
+
     @starboard.command()
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
@@ -458,7 +457,6 @@ class Config(commands.Cog, name='Config'):
         db.commit()
         cursor.close()
         db.close()
-    
 
     @starboard.command()
     @commands.guild_only()
@@ -481,7 +479,6 @@ class Config(commands.Cog, name='Config'):
         db.commit()
         cursor.close()
         db.close()
-
 
 
 def setup(client):
