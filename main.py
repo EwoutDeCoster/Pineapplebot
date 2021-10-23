@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands, tasks
+from discord.ext.commands import MissingPermissions
 import os
 from dotenv import load_dotenv
 import asyncio
@@ -263,27 +264,27 @@ async def setbotstatus(ctx, *, st):
 async def on_command_error(ctx, Exc):
     if isinstance(Exc, commands.CommandNotFound):
         return
-    if isinstance(Exc, commands.MissingRequiredArgument):
+    elif isinstance(Exc, commands.MissingRequiredArgument):
         await ctx.send("<a:no:898507018527211540> **| Missing required argument.**")
         return
-    if isinstance(Exc, commands.BadArgument):
+    elif isinstance(Exc, commands.BadArgument):
         await ctx.send("<a:no:898507018527211540> **| Bad argument.**")
         return
-    if isinstance(Exc, commands.DisabledCommand):
+    elif isinstance(Exc, commands.DisabledCommand):
         await ctx.send("<a:no:898507018527211540> **| Command is disabled.**")
         return
-    if isinstance(Exc, commands.NoPrivateMessage):
+    elif isinstance(Exc, commands.NoPrivateMessage):
         return
-    if isinstance(Exc, commands.BotMissingRole):
+    elif isinstance(Exc, commands.BotMissingRole):
         print(
             f"<a:no:898507018527211540> **| I don't have te perms to do that. Missing the following perms:** `{Exc}`")
         return
-    if isinstance(Exc, discord.errors.Forbidden):
+    elif isinstance(Exc, discord.errors.Forbidden):
         return
-    if isinstance(Exc, commands.errors.UnexpectedQuoteError):
+    elif isinstance(Exc, commands.errors.UnexpectedQuoteError):
         await ctx.send("<a:no:898507018527211540> **| Unexpected Quote**")
         return
-    if isinstance(Exc, commands.MissingPermissions):
+    elif isinstance(Exc, commands.MissingPermissions):
         try:
             missing = [perm.replace('_', ' ').replace(
                 'guild', 'server').title() for perm in Exc.missing_perms]
@@ -298,7 +299,7 @@ async def on_command_error(ctx, Exc):
             return
         except:
             return
-    if isinstance(Exc, commands.CommandOnCooldown):
+    elif isinstance(Exc, commands.CommandOnCooldown):
         try:
             if Exc.retry_after > 86400:
                 remaining = math.floor(Exc.retry_after / 86400)
@@ -314,7 +315,7 @@ async def on_command_error(ctx, Exc):
             return
         except:
             pass
-    if isinstance(Exc, commands.BotMissingPermissions):
+    elif isinstance(Exc, commands.BotMissingPermissions):
         try:
             missing = [perm.replace('_', ' ').replace(
                 'guild', 'server').title() for perm in Exc.missing_perms]
@@ -329,10 +330,15 @@ async def on_command_error(ctx, Exc):
             return
         except:
             pass
-    try:
-        msg = await ctx.send("<a:no:898507018527211540> **| An unknown error occured.**")
-    except:
-        pass
+    
+    elif isinstance(Exc, MissingPermissions):
+        return
+
+    else:
+        try:
+            msg = await ctx.send("<a:no:898507018527211540> **| An unknown error occured.**")
+        except:
+            pass
     raise Exc
 
 statsloop.start()

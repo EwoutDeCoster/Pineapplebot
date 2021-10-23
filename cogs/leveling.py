@@ -21,11 +21,28 @@ class Leveling(commands.Cog, name='Leveling'):
 
     def __init__(self, client):
         self.client = client
+    
+    def levelison(self, guildid):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT leveling FROM main WHERE guild_id = {guildid}")
+        lvlonoff = cursor.fetchone()
+        if lvlonoff[0] == "1":
+            return True
+        else:
+            return False
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
         try:
-            if message.guild.id == 850430800150659104 or message.guild.id == 110373943822540800 or message.guild.id == 439866052684283905 or message.guild.id == 796048327024050176 or message.guild.id == 110373943822540800:
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            cursor.execute(
+            f"SELECT leveling FROM main WHERE guild_id = {message.guild.id}")
+            lvlonoff = cursor.fetchone()
+            if lvlonoff[0] == "0":
                 return
         except:
             pass
@@ -98,23 +115,80 @@ class Leveling(commands.Cog, name='Leveling'):
     @commands.guild_only()
     async def rank(self, ctx, user: discord.User = None):
         def kform(num, round_to=1):
-            if abs(num) < 1000:
-                return num
-            else:
-                magnitude = 0
-                while abs(num) >= 1000:
-                    magnitude += 1
-                    num = round(num / 1000.0, round_to)
-                return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
+                    if abs(num) < 1000:
+                        return num
+                    else:
+                        magnitude = 0
+                        while abs(num) >= 1000:
+                            magnitude += 1
+                            num = round(num / 1000.0, round_to)
+                        return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
+        if self.levelison(ctx.guild.id):
+            if user is not None:
+                if user.bot:
+                    await ctx.send("**Bot's can't be ranked.**")
+                else:
+                    db = sqlite3.connect('cogs/main.sqlite')
+                    cursor = db.cursor()
+                    cursor.execute(
+                        f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{user.id}'")
+                    result = cursor.fetchone()
+                    sql = (
+                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+                    val = (str(ctx.guild.icon_url), ctx.guild.id)
+                    cursor.execute(sql, val)
+                    db.commit()
 
-        if user is not None:
-            if user.bot:
-                await ctx.send("**Bot's can't be ranked.**")
-            else:
+                    if result is None:
+                        await ctx.send("**That user is not ranked.**")
+                    else:
+                        lvl_start = int(result[2])
+                        #embed = discord.Embed(title=f"{user.name}", color=0x006ac7)
+                        # embed.set_thumbnail(url=f"{user.avatar_url}")
+                        # embed.add_field(
+                        #    name="Level", value=f"{lvl_start}", inline=True)
+                        # embed.add_field(name="Experience",
+                        #                value=f"{str(result[1])} / {math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)}", inline=True)
+                        #embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
+                        # await ctx.send(embed=embed)
+                        base = Image.open("cardb.png").convert("RGBA")
+                        txt = Image.new("RGBA", base.size, (255, 255, 255, 0))
+
+                        asset = user.avatar_url_as(size=256)
+                        data = BytesIO(await asset.read())
+                        pfp = Image.open(data)
+
+                        pfp = pfp.resize((180, 180))
+                        base.paste(pfp, (50, 50))
+
+                        # get a font
+                        fnt = ImageFont.truetype("arial.ttf", 35)
+                        nm = ImageFont.truetype("arial.ttf", 50)
+                        xpp = ImageFont.truetype("arial.ttf", 25)
+                        # get a drawing context
+                        d = ImageDraw.Draw(txt)
+
+                        d.text((260, 45), f"{user}", font=nm,
+                            fill=(7, 99, 190, 255))
+                        d.text((260, 110), f"Level: {lvl_start}", font=fnt, fill=(
+                            255, 255, 255, 255))
+                        d.text(
+                            (260, 155), f"Exp: {kform(result[1])} / {kform(math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100))}", font=xpp, fill=(255, 255, 255, 255))
+
+                        assett = Image.open(
+                            f"levelbars/{math.floor(100*(result[1]/math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)))}.png")
+                        base.paste(assett, (260, 195))
+
+                        out = Image.alpha_composite(base, txt)
+                        out.save('levelcard.png')
+                        await ctx.send(file=discord.File('levelcard.png'))
+                    cursor.close()
+                    db.close()
+            elif user is None:
                 db = sqlite3.connect('cogs/main.sqlite')
                 cursor = db.cursor()
                 cursor.execute(
-                    f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{user.id}'")
+                    f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{ctx.author.id}'")
                 result = cursor.fetchone()
                 sql = (
                     "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
@@ -122,13 +196,16 @@ class Leveling(commands.Cog, name='Leveling'):
                 cursor.execute(sql, val)
                 db.commit()
                 if result is None:
-                    await ctx.send("**That user is not ranked.**")
+                    msg = await ctx.send("**📊 | That user is not ranked.**")
+                    await asyncio.sleep(3)
+                    await msg.delete()
                 else:
                     lvl_start = int(result[2])
-                    #embed = discord.Embed(title=f"{user.name}", color=0x006ac7)
-                    # embed.set_thumbnail(url=f"{user.avatar_url}")
+                    # embed = discord.Embed(
+                    #    title=f"{ctx.author.name}", color=0x006ac7)
+                    # embed.set_thumbnail(url=f"{ctx.author.avatar_url}")
                     # embed.add_field(
-                    #    name="Level", value=f"{lvl_start}", inline=True)
+                    #    name="Level", value=f"{str(result[2])}", inline=True)
                     # embed.add_field(name="Experience",
                     #                value=f"{str(result[1])} / {math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)}", inline=True)
                     #embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
@@ -136,7 +213,7 @@ class Leveling(commands.Cog, name='Leveling'):
                     base = Image.open("cardb.png").convert("RGBA")
                     txt = Image.new("RGBA", base.size, (255, 255, 255, 0))
 
-                    asset = user.avatar_url_as(size=256)
+                    asset = ctx.author.avatar_url_as(size=256)
                     data = BytesIO(await asset.read())
                     pfp = Image.open(data)
 
@@ -150,8 +227,8 @@ class Leveling(commands.Cog, name='Leveling'):
                     # get a drawing context
                     d = ImageDraw.Draw(txt)
 
-                    d.text((260, 45), f"{user}", font=nm,
-                           fill=(7, 99, 190, 255))
+                    d.text((260, 45), f"{ctx.author}", font=nm,
+                        fill=(7, 99, 190, 255))
                     d.text((260, 110), f"Level: {lvl_start}", font=fnt, fill=(
                         255, 255, 255, 255))
                     d.text(
@@ -166,85 +243,38 @@ class Leveling(commands.Cog, name='Leveling'):
                     await ctx.send(file=discord.File('levelcard.png'))
                 cursor.close()
                 db.close()
-        elif user is None:
-            db = sqlite3.connect('cogs/main.sqlite')
-            cursor = db.cursor()
-            cursor.execute(
-                f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{ctx.author.id}'")
-            result = cursor.fetchone()
-            sql = (
-                "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
-            val = (str(ctx.guild.icon_url), ctx.guild.id)
-            cursor.execute(sql, val)
-            db.commit()
-            if result is None:
-                msg = await ctx.send("**📊 | That user is not ranked.**")
-                await asyncio.sleep(3)
-                await msg.delete()
-            else:
-                lvl_start = int(result[2])
-                # embed = discord.Embed(
-                #    title=f"{ctx.author.name}", color=0x006ac7)
-                # embed.set_thumbnail(url=f"{ctx.author.avatar_url}")
-                # embed.add_field(
-                #    name="Level", value=f"{str(result[2])}", inline=True)
-                # embed.add_field(name="Experience",
-                #                value=f"{str(result[1])} / {math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)}", inline=True)
-                #embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
-                # await ctx.send(embed=embed)
-                base = Image.open("cardb.png").convert("RGBA")
-                txt = Image.new("RGBA", base.size, (255, 255, 255, 0))
-
-                asset = ctx.author.avatar_url_as(size=256)
-                data = BytesIO(await asset.read())
-                pfp = Image.open(data)
-
-                pfp = pfp.resize((180, 180))
-                base.paste(pfp, (50, 50))
-
-                # get a font
-                fnt = ImageFont.truetype("arial.ttf", 35)
-                nm = ImageFont.truetype("arial.ttf", 50)
-                xpp = ImageFont.truetype("arial.ttf", 25)
-                # get a drawing context
-                d = ImageDraw.Draw(txt)
-
-                d.text((260, 45), f"{ctx.author}", font=nm,
-                       fill=(7, 99, 190, 255))
-                d.text((260, 110), f"Level: {lvl_start}", font=fnt, fill=(
-                    255, 255, 255, 255))
-                d.text(
-                    (260, 155), f"Exp: {kform(result[1])} / {kform(math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100))}", font=xpp, fill=(255, 255, 255, 255))
-
-                assett = Image.open(
-                    f"levelbars/{math.floor(100*(result[1]/math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)))}.png")
-                base.paste(assett, (260, 195))
-
-                out = Image.alpha_composite(base, txt)
-                out.save('levelcard.png')
-                await ctx.send(file=discord.File('levelcard.png'))
-            cursor.close()
-            db.close()
+        else:
+            await ctx.send("<a:no:898507018527211540> **| Leveling is not enabled.**")
 
     @commands.command()
     @commands.guild_only()
     async def leaderboard(self, ctx):
-        db = sqlite3.connect('cogs/main.sqlite')
-        cursor = db.cursor()
-        cursor.execute(
-            f"SELECT lvl, exp, user FROM leveling WHERE guild_id = {ctx.guild.id} ORDER BY lvl DESC, exp DESC LIMIT 5")
-        result = cursor.fetchmany(5)
-        sql = (
-                "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
-        val = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
-        cursor.execute(sql, val)
-        db.commit()
-        if result is not None:
-            embed = discord.Embed(title="Levels leaderboard",
-                                  description=f"{ctx.guild.name}", color=0x0068d6)
-            embed.add_field(name="** **", value=f"Visit the leveling leaderboard [here](https://pineapplebot.ga/leveling.html?&guild={ctx.guild.id})")
-            embed.set_footer(text=f"{webs} | {ctx.author}")
-            await ctx.send(embed=embed)
+        if self.levelison(ctx.guild.id):
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            cursor.execute(
+                f"SELECT lvl, exp, user FROM leveling WHERE guild_id = {ctx.guild.id} ORDER BY lvl DESC, exp DESC LIMIT 5")
+            result = cursor.fetchmany(5)
+            sql = (
+                    "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+            val = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
+            cursor.execute(sql, val)
+            db.commit()
+            sql2 = (
+                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ?")
+            val2 = (str(ctx.author.avatar_url), ctx.author.name, ctx.author.discriminator, ctx.guild.id)
+            cursor.execute(sql2, val2)
+            db.commit()
+            cursor.close()
+            db.close()
+            if result is not None:
+                embed = discord.Embed(title="Levels leaderboard",
+                                    description=f"{ctx.guild.name}", color=0x0068d6)
+                embed.add_field(name="** **", value=f"Visit the leveling leaderboard [here](https://pineapplebot.ga/leveling.html?&guild={ctx.guild.id})")
+                embed.set_footer(text=f"{webs} | {ctx.author}")
+                await ctx.send(embed=embed)
+        else:
+            await ctx.send("<a:no:898507018527211540> **| Leveling is not enabled.**")
 
         #if len(result) == 1:
         #    lvl1 = int(result[0][0])
@@ -376,9 +406,6 @@ class Leveling(commands.Cog, name='Leveling'):
         #    embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
         #    await ctx.send(embed=embed)
 
-        cursor.close()
-        db.close()
-
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
     async def levels(self, ctx):
@@ -398,20 +425,23 @@ class Leveling(commands.Cog, name='Leveling'):
     @commands.guild_only()
     @levels.command(name="set")
     async def _set(self, ctx, user: discord.User, level=0, exp=0):
-        db = sqlite3.connect('cogs/main.sqlite')
-        cursor = db.cursor()
-        sql = (
-            f"UPDATE leveling SET lvl = ?, exp = ? WHERE guild_id = {ctx.guild.id} and user = {user.id}")
-        val = (level, exp)
-        cursor.execute(sql, val)
-        db.commit()
-        if level == 0 and exp == 0:
-            await ctx.send(f"📊 | Levels have been reset for {user.mention}!")
+        if self.levelison(ctx.guild.id):
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            sql = (
+                f"UPDATE leveling SET lvl = ?, exp = ? WHERE guild_id = {ctx.guild.id} and user = {user.id}")
+            val = (level, exp)
+            cursor.execute(sql, val)
+            db.commit()
+            if level == 0 and exp == 0:
+                await ctx.send(f"📊 | Levels have been reset for {user.mention}!")
+            else:
+                await ctx.send(f"📊 | {user.mention} has been given **{level}** levels and **{exp}** exp!")
+            await ctx.message.delete()
+            cursor.close()
+            db.close()
         else:
-            await ctx.send(f"📊 | {user.mention} has been given **{level}** levels and **{exp}** exp!")
-        await ctx.message.delete()
-        cursor.close()
-        db.close()
+            await ctx.send("<a:no:898507018527211540> **| Leveling is not enabled.**")
 
 
 def setup(client):

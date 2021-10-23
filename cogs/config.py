@@ -479,6 +479,60 @@ class Config(commands.Cog, name='Config'):
         db.commit()
         cursor.close()
         db.close()
+    
+    @commands.group(invoke_without_command=True)
+    @commands.guild_only()
+    async def leveling(self, ctx):
+        embed = discord.Embed(
+            title="⚙️ Leveling", description="Customize the leveling settings!", color=0x006ce0)
+        embed.add_field(name="-leveling [enable|disable]",
+                        value="Toggle the leveling system on or off.", inline=False)
+        embed.set_footer(
+            text=f"Leveling settings.")
+        await ctx.send(embed=embed)
+    
+    @leveling.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def enable(self, ctx):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT leveling FROM main WHERE guild_id = {ctx.guild.id}")
+        result = cursor.fetchone()
+        if result[0] == "0":
+            sql = ("UPDATE main SET leveling = ? where guild_id = ?")
+            val = ("1", ctx.guild.id)
+            cursor.execute(sql, val)
+            db.commit()
+            cursor.close()
+            db.close()
+            await ctx.send(f"⚙ **| Leveling has been enabled!**")
+        else:
+            await ctx.send(f"<a:no:898507018527211540> **| Leveling is already enabled!**")
+
+    @leveling.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def disable(self, ctx):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        cursor.execute(
+            f"SELECT leveling FROM main WHERE guild_id = {ctx.guild.id}")
+        result = cursor.fetchone()
+        if result[0] == "1":
+            sql = ("UPDATE main SET leveling = ? where guild_id = ?")
+            val = ("0", ctx.guild.id)
+            cursor.execute(sql, val)
+            db.commit()
+            cursor.close()
+            db.close()
+            await ctx.send(f"⚙ **| Leveling has been disabled!**")
+        else:
+            await ctx.send(f"<a:no:898507018527211540> **| Leveling is already disabled!**")
+
+    
+
 
 
 def setup(client):

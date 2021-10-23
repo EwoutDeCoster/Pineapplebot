@@ -7,6 +7,7 @@ import random
 import os
 import urllib
 import requests
+import sqlite3
 import sys
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -402,12 +403,24 @@ class Info(commands.Cog, name='Info'):
     @commands.command()
     @commands.guild_only()
     async def profile(self, ctx):
+        db = sqlite3.connect('cogs/main.sqlite')
+        cursor = db.cursor()
+        sql = (
+                "UPDATE economy SET username = ?, discriminator = ?, username = ?, avatar = ? where guild = ? and user = ?")
+        val = (ctx.author.id, ctx.author.discriminator, ctx.author.name, str(ctx.author.avatar_url), ctx.guild.id, ctx.author.id)
+        cursor.execute(sql, val)
+        db.commit()
+        sql2 = (
+                "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+        val2 = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
+        cursor.execute(sql2, val2)
+        db.commit()
         created_at = f"{ctx.author.created_at.strftime('%d/%m/%Y')}"
         name = ctx.author.name
         if " " in ctx.author.name:
             name = ctx.author.name.replace(" ", "%20")
         embed = discord.Embed(
-            title="Profile", url=f"https://www.pineapplebot.ga/profile?&username={name}&createdon={created_at}&id={ctx.author.id}&discriminator={ctx.author.discriminator}&image={str(ctx.author.avatar_url)}",  description=f"Go to your profile by clicking [here](https://www.pineapplebot.ga/profile?&username={name}&createdon={created_at}&id={ctx.author.id}&discriminator={ctx.author.discriminator}&image={str(ctx.author.avatar_url)}).", color=0x0a4d8b)
+            title="Profile", url=f"https://www.pineapplebot.ga/profile?&username={name}&guild={ctx.guild.id}&createdon={created_at}&id={ctx.author.id}",  description=f"Go to your profile by clicking [here](https://www.pineapplebot.ga/profile?&username={name}&guild={ctx.guild.id}&createdon={created_at}&id={ctx.author.id}).", color=0x0a4d8b)
         embed.set_thumbnail(url=ctx.author.avatar_url_as(size=256))
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.message.reply(embed=embed)
