@@ -333,6 +333,8 @@ async def on_command_error(ctx, Exc):
     
     elif isinstance(Exc, MissingPermissions):
         return
+    elif isinstance(Exc, discord.errors.Forbidden):
+        return
 
     else:
         try:

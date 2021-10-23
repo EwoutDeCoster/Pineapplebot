@@ -20,10 +20,10 @@ app.get("/", (req, res) => {
   res.status(200).json({ status: "online" });
 });
 
-/*app.get("/all", async (req, res) => {
+app.get("/all/leveling", async (req, res) => {
   const users = await db.getAll();
   res.status(200).json({ users });
-});*/
+});
 
 app.get("/leaderboard/:guild_id", async (req, res) => {
   const users = await db.getUsers(req.params.guild_id, req.body);
