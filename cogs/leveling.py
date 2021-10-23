@@ -137,6 +137,11 @@ class Leveling(commands.Cog, name='Leveling'):
                         "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
                     val = (str(ctx.guild.icon_url), ctx.guild.id)
                     cursor.execute(sql, val)
+                    sql2 = (
+                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
+                    val2 = (str(ctx.author.avatar_url), ctx.author.name, ctx.author.discriminator, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql2, val2)
+                    db.commit()
                     db.commit()
 
                     if result is None:
@@ -194,6 +199,11 @@ class Leveling(commands.Cog, name='Leveling'):
                     "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
                 val = (str(ctx.guild.icon_url), ctx.guild.id)
                 cursor.execute(sql, val)
+                sql2 = (
+                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
+                val2 = (str(ctx.author.avatar_url), ctx.author.name, ctx.author.discriminator, ctx.guild.id, ctx.author.id)
+                cursor.execute(sql2, val2)
+                db.commit()
                 db.commit()
                 if result is None:
                     msg = await ctx.send("**📊 | That user is not ranked.**")
@@ -261,8 +271,8 @@ class Leveling(commands.Cog, name='Leveling'):
             cursor.execute(sql, val)
             db.commit()
             sql2 = (
-                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ?")
-            val2 = (str(ctx.author.avatar_url), ctx.author.name, ctx.author.discriminator, ctx.guild.id)
+                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
+            val2 = (str(ctx.author.avatar_url), ctx.author.name, ctx.author.discriminator, ctx.guild.id, ctx.author.id)
             cursor.execute(sql2, val2)
             db.commit()
             cursor.close()

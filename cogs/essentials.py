@@ -27,13 +27,6 @@ class Essentials(commands.Cog, name='Essentials'):
     @commands.guild_only()
     async def on_message(self, message):
         try:
-
-            if "kekw" in message.content.lower() and not message.author.bot:
-                await message.add_reaction("<:kekw:829283834750435341>")
-            if 'sheesh' in message.content.lower():
-                await message.add_reaction("<:sheesh:846726354291785749>")
-            if " heh " in message.content.lower() or "heh " in message.content.lower() or message.content.lower() == "heh":
-                await message.add_reaction("<a:loading:841639840785498173>")
             if self.client.user.mentioned_in(message) and len(message.content) <= 22 and not "everyone" in message.content.lower() and not "here" in message.content.lower() and not "someone" in message.content.lower():
                 embed = discord.Embed(description="Prefix: `-`",
                                       color=0x0a4d8b)
