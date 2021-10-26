@@ -26,7 +26,7 @@ class Help(commands.Cog, name='Help'):
             title="Help", description="Go to our website for more information about the Pineapple Bot", color=0x0a4d8b)
         embed.add_field(
             name="** **", value="Visit our website by clicking [here](https://www.pineapplebot.ga/).")
-        embed.set_thumbnail(url="https://i.imgur.com/rjxnHHM.png")
+        embed.set_thumbnail(url=f"{str(self.client.user.avatar_url)}")
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
 

@@ -13,8 +13,8 @@ class Automod(commands.Cog, name='Automod'):
     def __init__(self, client):
         self.client = client
 
-    @commands.Cog.listener()
     @commands.guild_only()
+    @commands.Cog.listener()
     async def on_message(self, message):
         if not message.author.bot:
             db = sqlite3.connect('cogs/main.sqlite')
@@ -71,8 +71,8 @@ class Automod(commands.Cog, name='Automod'):
         else:
             return
 
-    @commands.Cog.listener()
     @commands.guild_only()
+    @commands.Cog.listener()
     async def on_member_update(self, before, after):
         if not before.bot and before.nick != after.nick:
             db = sqlite3.connect('cogs/main.sqlite')
@@ -101,7 +101,9 @@ class Automod(commands.Cog, name='Automod'):
                     except:
                         pass
             elif result[0] == "1" and after.nick is None:
-                if after.name.startswith("!") or after.name.startswith(" ") or after.name.startswith("?") or after.name.startswith("\"") or after.name.startswith("#") or after.name.startswith("$") or after.name.startswith("%") or after.name.startswith("&") or after.name.startswith("\'") or after.name.lower().startswith("aaa") or "卐" in after.name:
+                if after.id == 310068607549964289:
+                    return
+                elif after.name.startswith("!") or after.name.startswith(" ") or after.name.startswith("?") or after.name.startswith("\"") or after.name.startswith("#") or after.name.startswith("$") or after.name.startswith("%") or after.name.startswith("&") or after.name.startswith("\'") or after.name.lower().startswith("aaa") or "卐" in after.name:
                     try:
                         hoist = after.name
                         await after.edit(nick="no hoisting")

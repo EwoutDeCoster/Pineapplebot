@@ -31,7 +31,7 @@ class Essentials(commands.Cog, name='Essentials'):
                 embed = discord.Embed(description="Prefix: `-`",
                                       color=0x0a4d8b)
                 embed.set_author(
-                    name="Pineapple Bot", icon_url="https://cdn.discordapp.com/avatars/463388759866474506/b282e13b4fe1c13a637b31704e5c4b11.webp?size=1024", url=f"https://www.{webs}")
+                    name="Pineapple Bot", icon_url=f"{str(self.client.user.avatar_url)}", url=f"https://www.{webs}")
                 embed.set_footer(
                     text=f"Ping: {round(self.client.latency * 1000)}ms")
                 await message.reply(embed=embed)
@@ -48,8 +48,8 @@ class Essentials(commands.Cog, name='Essentials'):
             embed = discord.Embed(
                 description="Pineapple is the all in one bot for your discord server! It features Moderation, reaction roles, leveling, crypto, ...\n \n[Invite](https://discord.com/oauth2/authorize?client_id=463388759866474506&scope=bot&permissions=8) Pineapple today!", color=0x0a4d8b)
             embed.set_author(name="Pineapple Bot", url="https://www.pineapplebot.ga/",
-                             icon_url="https://i.imgur.com/rjxnHHM.png")
-            embed.set_image(url="https://i.imgur.com/rjxnHHM.png")
+                             icon_url=f"{str(self.client.user.avatar_url)}")
+            embed.set_image(url=f"{str(self.client.user.avatar_url)}")
             embed.set_footer(text=f"{webs} | {footertext}")
             await ctx.send(embed=embed)
         else:
@@ -57,8 +57,8 @@ class Essentials(commands.Cog, name='Essentials'):
             embed = discord.Embed(
                 description="If you're interested in a partnership with pineapple, you can learn more by sending ccaved a dm:\n \n[Learn more!](https://discord.com/users/302075047244333056)", color=0x0a4d8b)
             embed.set_author(name="Partnership",
-                             icon_url="https://i.imgur.com/rjxnHHM.png")
-            embed.set_image(url="https://i.imgur.com/rjxnHHM.png")
+                             icon_url=f"{str(self.client.user.avatar_url)}")
+            embed.set_image(url=f"{str(self.client.user.avatar_url)}")
             embed.set_footer(text=f"{webs} | Partnerships")
             await ctx.send(embed=embed)
 
@@ -85,7 +85,7 @@ class Essentials(commands.Cog, name='Essentials'):
         embed = discord.Embed(
             title="Version", description=vers, color=0x0a4d8b)
         embed.set_thumbnail(
-            url="https://i.imgur.com/rjxnHHM.png")
+            url=f"{str(self.client.user.avatar_url)}")
         embed.set_footer(text=f"{webs}")
         await ctx.send(embed=embed)
         print(f'{ctx.author} Version cmd')
@@ -343,10 +343,10 @@ class Essentials(commands.Cog, name='Essentials'):
     @commands.command()
     async def vote(self, ctx):
         embed = discord.Embed(
-            title="📩 Vote", description="**You can vote for the bot on the following platforms:**\n** **\n[Botclub](https://botclub.ml/bot/463388759866474506)", color=0x0068d6)
+            title="📩 Vote", description="**You can vote for the bot on [Top.gg](https://top.gg/bot/463388759866474506).**", color=0x0068d6)
         embed.set_thumbnail(
-            url="https://cdn.discordapp.com/avatars/463388759866474506/b282e13b4fe1c13a637b31704e5c4b11.webp?size=1024")
-        embed.set_footer(text=f"{webs} | {ctx.author}")
+            url=f"{str(self.client.user.avatar_url)}")
+        embed.set_footer(text=f"You can vote using -vote every 12 hours.")
         await ctx.send(embed=embed)
 
     @commands.command()
