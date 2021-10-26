@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const db = require("./db/leaderboard");
 const cors = require("cors");
+const { getData, getPreview, getTracks } = require('spotify-url-info')
 /*const https = require("https"),
   fs = require("fs");*/
 
@@ -18,6 +19,11 @@ app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.status(200).json({ status: "online" });
+});
+
+app.get("/yt", async (req, res) => {
+  getPreview(req.query.song).catch(err => res.status(200).json({ data : "failed" }))
+  .then(data => res.status(200).json({ data }))
 });
 
 /*app.get("/all/leveling", async (req, res) => {

@@ -118,6 +118,13 @@ class Radio(commands.Cog, name='Radio'):
         try:
             if ctx.guild.id in authservers:
                 query = " ".join(args)
+                if query.startswith("https://open.spotify"):
+                    r = requests.get(
+                            f'https://pineappleapi.ga/yt?song={query}')
+                    d = r.json()
+                    sng = d["data"]["track"]
+                    art = d["data"]["artist"]
+                    query = f"{art} {sng}"
 
                 voice_channel = ctx.author.voice.channel
                 if voice_channel is None:
@@ -149,6 +156,13 @@ class Radio(commands.Cog, name='Radio'):
     @commands.guild_only()
     async def song(self, ctx, *args):
         query = " ".join(args)
+        if query.startswith("https://open.spotify"):
+                    r = requests.get(
+                            f'https://pineappleapi.ga/yt?song={query}')
+                    d = r.json()
+                    sng = d["data"]["track"]
+                    art = d["data"]["artist"]
+                    query = f"{art} {sng}"
         song = self.search_yt(query)
         if type(song) == type(True):
             await ctx.send("⚠ **| Could not download song. Make sure it's not a livestream.**")
