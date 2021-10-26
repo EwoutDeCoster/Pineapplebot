@@ -843,23 +843,20 @@ class Economy(commands.Cog, name='Economy'):
                     magnitude += 1
                     num = round(num / 1000.0, round_to)
                 return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
-        reward = random.randint(500, 900)
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
         cursor.execute(
             f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
-        levelboost = (int(result[2]) / 10) * reward
-        totalreward = round(levelboost + reward)
+        reward = round(33 * (int(result[2]) ** 2) + 10*int(result[2]) + 225 + random.randint(1, 15*int(result[2])))
         if result[1] == 1:
             sql = (
                 "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
-            val = (totalreward, ctx.guild.id, ctx.author.id)
+            val = (reward, ctx.guild.id, ctx.author.id)
             cursor.execute(sql, val)
             db.commit()
             embed = discord.Embed(title="Mining machine reward",
-                                  description=f"You have collected **<:silver:856609576459304961> {kform(totalreward)}**.", color=0x00FF00)
-            print(f"reward: {reward}, boost: {levelboost}")
+                                  description=f"You have collected **<:silver:856609576459304961> {kform(reward)}**.", color=0x00FF00)
             embed.set_thumbnail(url="https://i.imgur.com/2w2lkHO.png")
             embed.set_footer(text=f"{webs} | {ctx.author}")
             await ctx.send(embed=embed)
