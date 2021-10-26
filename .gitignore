@@ -2,3 +2,5 @@
 /api/node_modules
 musicoutput.txt
 .sqlite
+/api/package-lock.json
+/api/package.json
