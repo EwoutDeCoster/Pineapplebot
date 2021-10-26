@@ -119,7 +119,7 @@ class Moderation(commands.Cog, name='Moderation'):
         embed = discord.Embed(
             title=f"You got a warning in {member.guild.name}", description=f"Warning: {reason}", color=0xff0000)
         embed.set_author(
-            name="Pineapple", icon_url=f"https://i.imgur.com/rjxnHHM.png")
+            name="Pineapple", icon_url=f"{str(self.client.user.avatar_url)}")
         embed.set_thumbnail(
             url="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Warning.svg/832px-Warning.svg.png")
         embed.set_footer(text=f"{webs} | {member.guild.name}")
@@ -128,7 +128,7 @@ class Moderation(commands.Cog, name='Moderation'):
         moderation = discord.Embed(
             title=f"{member} got warned", description=f"Warning: {reason}", color=0xff0000)
         moderation.set_author(
-            name="Pineapple", icon_url=f"https://i.imgur.com/rjxnHHM.png")
+            name="Pineapple", icon_url=f"{str(self.client.user.avatar_url)}")
         moderation.set_footer(text=f"{webs} | Moderator: {ctx.author}")
         await channel.send(embed=moderation)
         print(f'{member} got warned for {reason}')
@@ -175,7 +175,7 @@ class Moderation(commands.Cog, name='Moderation'):
 
             embed = discord.Embed(title="Report", color=0xff0000)
             embed.set_author(
-                name="Pineapple", icon_url=f"https://i.imgur.com/rjxnHHM.png")
+                name="Pineapple", icon_url=f"{str(self.client.user.avatar_url)}")
             embed.add_field(name=f"{ctx.author} has reported {member}",
                             value=f"Reason: {reason}", inline=True)
             embed.set_footer(text=f"{webs}")
@@ -207,7 +207,7 @@ class Moderation(commands.Cog, name='Moderation'):
             lg = discord.Embed(
                 title="Modmail", description=f"{ctx.author.mention} used modmail!", color=0xFF5A00)
             lg.set_author(name="Pineapple",
-                          icon_url=f"https://i.imgur.com/rjxnHHM.png")
+                          icon_url=f"{str(self.client.user.avatar_url)}")
             lg.add_field(name=f"{ctx.author} used modmail!",
                          value=f"Message: {msg}", inline=True)
             lg.set_footer(text=f"{webs}")
@@ -249,7 +249,7 @@ class Moderation(commands.Cog, name='Moderation'):
                 title="DM", description=f"{ctx.author.mention} used DM to message {member.mention}!\n\n **Message:** {msg}",
                 color=0xFF5A00)
             embed.set_author(
-                name="Pineapple", icon_url=f"https://i.imgur.com/rjxnHHM.png")
+                name="Pineapple", icon_url=f"{str(self.client.user.avatar_url)}")
             embed.set_footer(text=f"{webs} | {ctx.author}")
             await log.send(embed=embed)
 
@@ -274,7 +274,7 @@ class Moderation(commands.Cog, name='Moderation'):
             embed = discord.Embed(
                 title="Clear", description=f"{ctx.author.mention} removed **{amount}** messages in {ch}", color=0xFF5A00)
             embed.set_author(
-                name="Pineapple", icon_url=f"https://i.imgur.com/rjxnHHM.png")
+                name="Pineapple", icon_url=f"{str(self.client.user.avatar_url)}")
             embed.set_footer(text=f"{webs}")
             await log.send(embed=embed)
             time.sleep(2)
