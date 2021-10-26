@@ -17,6 +17,7 @@ import logging
 from io import BytesIO
 import math
 import json
+import topgg
 
 # Pre made: dev, prob
 statuss = "-help | Pineapplebot.ga"
@@ -24,9 +25,16 @@ webs = "Pineapplebot.ga"
 
 load_dotenv()
 TOKEN = os.getenv('BOTTOKEN')
+TOPGGTOKEN = os.getenv('TOPGGTOKEN')
 
 client = commands.Bot(command_prefix='-',
                       intents=Intents.all(), case_insensitive=True)
+
+
+dbl_token = TOPGGTOKEN  # set this to your bot's Top.gg token
+client.topggpy = topgg.DBLClient(client, dbl_token)
+client.topgg_webhook = topgg.WebhookManager(client).dbl_webhook("/dblwebhook", "dikkeberta")
+client.topgg_webhook.run(5000)
 
 
 dislog = logging.getLogger('discord')
@@ -69,7 +77,7 @@ async def on_ready():
     db.close()
 
 
-@tasks.loop(seconds=3600)  # repeat after every 10 seconds
+@tasks.loop(seconds=3600)
 async def statsloop():
     db = sqlite3.connect('cogs/main.sqlite')
     cursor = db.cursor()
@@ -80,6 +88,14 @@ async def statsloop():
     db.commit()
     cursor.close()
     db.close()
+
+@tasks.loop(minutes=30)
+async def update_stats():
+    try:
+        await client.topggpy.post_guild_count()
+    except Exception as e:
+        print(f"Failed to post server count\n{e.__class__.__name__}: {e}")
+
 
 
 @client.event
@@ -92,7 +108,7 @@ async def on_guild_join(guild):
                 title="Pineapple", description="Thanks for inviting pineapple to the server!", color=0x0a4d8b)
             embed.add_field(
                 name="** **", value="See all commands [here](https://www.pineapplebot.ga/commands).")
-            embed.set_thumbnail(url="https://i.imgur.com/rjxnHHM.png")
+            embed.set_thumbnail(url=f"{str(client.user.avatar_url)}")
             embed.set_footer(text=f"{webs}")
             await guild.channels[index].send(embed=embed)
         except discord.Forbidden:
@@ -131,7 +147,7 @@ async def on_guild_remove(guild):
     print(f"Got Kicked: {guild.name} | {guild.id}")
     db = sqlite3.connect('cogs/main.sqlite')
     cursor = db.cursor()
-    sql = ("DELETE FROM main WHERE guild_id = ?")
+    sql = ("DELETE FROM main WHERE guild_id = '?'")
     val = (guild.id)
     cursor.execute(sql, val)
 
@@ -139,7 +155,7 @@ async def on_guild_remove(guild):
     val1 = (guild.id)
     cursor.execute(sql1, val1)
 
-    sql2 = ("DELETE FROM leveling WHERE guild_id = ?")
+    sql2 = ("DELETE FROM leveling WHERE guild_id = '?'")
     val2 = (guild.id)
     cursor.execute(sql2, val2)
 
@@ -151,7 +167,7 @@ async def on_guild_remove(guild):
     val4 = (guild.id)
     cursor.execute(sql4, val4)
 
-    sql5 = ("DELETE FROM suggestions WHERE guild = ?")
+    sql5 = ("DELETE FROM suggestions WHERE guild = '?'")
     val5 = (guild.id)
     cursor.execute(sql5, val5)
 
@@ -344,4 +360,5 @@ async def on_command_error(ctx, Exc):
     raise Exc
 
 statsloop.start()
+update_stats.start()
 client.run(TOKEN)
