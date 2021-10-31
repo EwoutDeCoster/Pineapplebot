@@ -4,3 +4,4 @@ musicoutput.txt
 .sqlite
 /api/package-lock.json
 /api/package.json
+.idea/
