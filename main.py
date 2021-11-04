@@ -33,7 +33,8 @@ client = commands.Bot(command_prefix='-',
 
 dbl_token = TOPGGTOKEN  # set this to your bot's Top.gg token
 client.topggpy = topgg.DBLClient(client, dbl_token)
-client.topgg_webhook = topgg.WebhookManager(client).dbl_webhook("/dblwebhook", "dikkeberta")
+client.topgg_webhook = topgg.WebhookManager(
+    client).dbl_webhook("/dblwebhook", "dikkeberta")
 client.topgg_webhook.run(5000)
 
 
@@ -89,13 +90,13 @@ async def statsloop():
     cursor.close()
     db.close()
 
+
 @tasks.loop(minutes=30)
 async def update_stats():
     try:
         await client.topggpy.post_guild_count()
     except Exception as e:
         print(f"Failed to post server count\n{e.__class__.__name__}: {e}")
-
 
 
 @client.event
@@ -188,6 +189,8 @@ async def on_member_join(member):
     cursor.execute(
         f"SELECT welcomech_id, membercnt_id, welcomedm FROM main WHERE guild_id = {member.guild.id}")
     result = cursor.fetchone()
+    if result is None:
+        return
     if result[0] is None:
         return
     else:
@@ -346,7 +349,7 @@ async def on_command_error(ctx, Exc):
             return
         except:
             pass
-    
+
     elif isinstance(Exc, MissingPermissions):
         return
     elif isinstance(Exc, discord.errors.Forbidden):
