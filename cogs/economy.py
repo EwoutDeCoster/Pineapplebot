@@ -19,20 +19,6 @@ import time
 
 webs = str("Pineapplebot.ga")
 
-db = sqlite3.connect('cogs/main.sqlite')
-cursor = db.cursor()
-
-cursor.execute(
-    f"SELECT guild_id FROM main WHERE guild_id > 0")
-result = cursor.fetchall()
-cursor.close()
-db.close()
-i = 0
-guild_ids = []
-while i < len(result):
-    guild_ids.append(result[i][0])
-    i += 1
-
 
 class Economy(commands.Cog, name='Economy'):
 
@@ -269,6 +255,10 @@ class Economy(commands.Cog, name='Economy'):
             val = (reward, ctx.author.name, ctx.author.discriminator,
                    str(ctx.author.avatar_url), ctx.guild.id, ctx.author.id)
             cursor.execute(sql, val)
+            sql1 = (
+                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+            val1 = (str(ctx.guild.icon_url), ctx.guild.id)
+            cursor.execute(sql1, val1)
             db.commit()
         embed = discord.Embed(
             title="📆 Daily reward", description=f"You've claimed your daily reward!\n<:silver:856609576459304961> **{reward}**", color=0x005ec2)
@@ -423,6 +413,11 @@ class Economy(commands.Cog, name='Economy'):
         cursor.execute(
             f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} ORDER BY silver DESC LIMIT 5")
         result = cursor.fetchmany(5)
+        sql1 = (
+                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+        val1 = (str(ctx.guild.icon_url), ctx.guild.id)
+        cursor.execute(sql1, val1)
+        db.commit()
         i = 0
         embed = discord.Embed(title="Silver leaderboard",
                               description=f"Visit the economy leaderboard [here](https://pineapplebot.ga/economy?guild={ctx.guild.id}).", color=0x0068d6)
