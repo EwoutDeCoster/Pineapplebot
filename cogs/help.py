@@ -21,14 +21,16 @@ class Help(commands.Cog, name='Help'):
     @commands.command(name="help")
     @commands.guild_only()
     async def help(self, ctx):
-
-        embed = discord.Embed(
-            title="Help", description="Go to our website for more information about the Pineapple Bot", color=0x0a4d8b)
-        embed.add_field(
-            name="** **", value="Visit our website by clicking [here](https://www.pineapplebot.ga/).")
-        embed.set_thumbnail(url=f"{str(self.client.user.avatar_url)}")
-        embed.set_footer(text=f"{webs} | {ctx.author}")
-        await ctx.send(embed=embed)
+        try:
+                embed = discord.Embed(
+                title="Help", description="Go to our website for more information about the Pineapple Bot", color=0x0a4d8b)
+                embed.add_field(
+                name="** **", value="Visit our website by clicking [here](https://www.pineapplebot.ga/).")
+                embed.set_thumbnail(url=f"{str(self.client.user.avatar_url)}")
+                embed.set_footer(text=f"{webs} | {ctx.author}")
+                await ctx.send(embed=embed)
+        except:
+                pass
 
         # await ctx.message.add_reaction('<:check_pine:834872371281264661>')
 #
