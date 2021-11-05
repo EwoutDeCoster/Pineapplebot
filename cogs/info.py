@@ -420,7 +420,7 @@ class Info(commands.Cog, name='Info'):
         if " " in ctx.author.name:
             name = ctx.author.name.replace(" ", "%20")
         embed = discord.Embed(
-            title="Profile", url=f"https://www.pineapplebot.ga/profile?&username={name}&guild={ctx.guild.id}&createdon={created_at}&id={ctx.author.id}",  description=f"Go to your profile by clicking [here](https://www.pineapplebot.ga/profile?&username={name}&guild={ctx.guild.id}&createdon={created_at}&id={ctx.author.id}).", color=0x0a4d8b)
+            title="Profile", description=f"Go to your profile by clicking [here](https://www.pineapplebot.ga/profile?&username={name}&guild={ctx.guild.id}&createdon={created_at}&id={ctx.author.id}).", color=0x0a4d8b)
         embed.set_thumbnail(url=ctx.author.avatar_url_as(size=256))
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.message.reply(embed=embed)
