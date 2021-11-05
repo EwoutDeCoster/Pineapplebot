@@ -10,7 +10,7 @@ import requests
 import sys
 import sqlite3
 import math
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from io import BytesIO
 
 webs = str("Pineapplebot.ga")
@@ -132,39 +132,30 @@ class Leveling(commands.Cog, name='Leveling'):
                     cursor.execute(
                         f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{user.id}'")
                     result = cursor.fetchone()
-                    sql = (
-                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
-                    val = (str(ctx.guild.icon_url), ctx.guild.id)
-                    cursor.execute(sql, val)
-                    sql2 = (
-                        "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
-                    val2 = (str(ctx.author.avatar_url), ctx.author.name,
-                            ctx.author.discriminator, ctx.guild.id, ctx.author.id)
-                    cursor.execute(sql2, val2)
-                    db.commit()
-                    db.commit()
+                    
 
                     if result is None:
                         await ctx.send("**That user is not ranked.**")
                     else:
+
                         lvl_start = int(result[2])
-                        #embed = discord.Embed(title=f"{user.name}", color=0x006ac7)
-                        # embed.set_thumbnail(url=f"{user.avatar_url}")
-                        # embed.add_field(
-                        #    name="Level", value=f"{lvl_start}", inline=True)
-                        # embed.add_field(name="Experience",
-                        #                value=f"{str(result[1])} / {math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)}", inline=True)
-                        #embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
-                        # await ctx.send(embed=embed)
                         base = Image.open("cardb.png").convert("RGBA")
                         txt = Image.new("RGBA", base.size, (255, 255, 255, 0))
 
                         asset = user.avatar_url_as(size=256)
                         data = BytesIO(await asset.read())
                         pfp = Image.open(data)
-
                         pfp = pfp.resize((180, 180))
-                        base.paste(pfp, (50, 50))
+
+                        size = (180, 180)
+                        mask = Image.new('L', size, 0)
+                        draw = ImageDraw.Draw(mask) 
+                        draw.ellipse((0, 0) + size, fill=255)
+
+                        output = ImageOps.fit(pfp, mask.size, centering=(0.5, 0.5)).convert("RGBA")
+                        output.putalpha(mask)
+
+                        base.paste(output, (50, 50), output)
 
                         # get a font
                         fnt = ImageFont.truetype("arial.ttf", 35)
@@ -187,6 +178,16 @@ class Leveling(commands.Cog, name='Leveling'):
                         out = Image.alpha_composite(base, txt)
                         out.save('levelcard.png')
                         await ctx.send(file=discord.File('levelcard.png'))
+                    sql = (
+                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+                    val = (str(ctx.guild.icon_url), ctx.guild.id)
+                    cursor.execute(sql, val)
+                    sql2 = (
+                        "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
+                    val2 = (str(ctx.author.avatar_url), ctx.author.name,
+                            ctx.author.discriminator, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql2, val2)
+                    db.commit()
                     cursor.close()
                     db.close()
             elif user is None:
@@ -195,41 +196,29 @@ class Leveling(commands.Cog, name='Leveling'):
                 cursor.execute(
                     f"SELECT user, exp, lvl FROM leveling WHERE guild_id = '{ctx.guild.id}' and user = '{ctx.author.id}'")
                 result = cursor.fetchone()
-                sql = (
-                    "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
-                val = (str(ctx.guild.icon_url), ctx.guild.id)
-                cursor.execute(sql, val)
-                sql2 = (
-                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
-                val2 = (str(ctx.author.avatar_url), ctx.author.name,
-                        ctx.author.discriminator, ctx.guild.id, ctx.author.id)
-                cursor.execute(sql2, val2)
-                db.commit()
-                db.commit()
                 if result is None:
                     msg = await ctx.send("**📊 | That user is not ranked.**")
                     await asyncio.sleep(3)
                     await msg.delete()
                 else:
                     lvl_start = int(result[2])
-                    # embed = discord.Embed(
-                    #    title=f"{ctx.author.name}", color=0x006ac7)
-                    # embed.set_thumbnail(url=f"{ctx.author.avatar_url}")
-                    # embed.add_field(
-                    #    name="Level", value=f"{str(result[2])}", inline=True)
-                    # embed.add_field(name="Experience",
-                    #                value=f"{str(result[1])} / {math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)}", inline=True)
-                    #embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
-                    # await ctx.send(embed=embed)
                     base = Image.open("cardb.png").convert("RGBA")
                     txt = Image.new("RGBA", base.size, (255, 255, 255, 0))
 
                     asset = ctx.author.avatar_url_as(size=256)
                     data = BytesIO(await asset.read())
                     pfp = Image.open(data)
-
                     pfp = pfp.resize((180, 180))
-                    base.paste(pfp, (50, 50))
+
+                    size = (180, 180)
+                    mask = Image.new('L', size, 0)
+                    draw = ImageDraw.Draw(mask) 
+                    draw.ellipse((0, 0) + size, fill=255)
+
+                    output = ImageOps.fit(pfp, mask.size, centering=(0.5, 0.5)).convert("RGBA")
+                    output.putalpha(mask)
+
+                    base.paste(output, (50, 50), output)
 
                     # get a font
                     fnt = ImageFont.truetype("arial.ttf", 35)
@@ -248,10 +237,21 @@ class Leveling(commands.Cog, name='Leveling'):
                     assett = Image.open(
                         f"levelbars/{math.floor(100*(result[1]/math.floor(5 * (lvl_start ^ 2) + 50 * lvl_start + 100)))}.png")
                     base.paste(assett, (260, 195))
+                    
 
                     out = Image.alpha_composite(base, txt)
                     out.save('levelcard.png')
                     await ctx.send(file=discord.File('levelcard.png'))
+                sql = (
+                    "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+                val = (str(ctx.guild.icon_url), ctx.guild.id)
+                cursor.execute(sql, val)
+                sql2 = (
+                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
+                val2 = (str(ctx.author.avatar_url), ctx.author.name,
+                        ctx.author.discriminator, ctx.guild.id, ctx.author.id)
+                cursor.execute(sql2, val2)
+                db.commit()
                 cursor.close()
                 db.close()
         else:
