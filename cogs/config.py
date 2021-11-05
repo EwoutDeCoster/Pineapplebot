@@ -22,7 +22,7 @@ class Config(commands.Cog, name='Config'):
     @commands.guild_only()
     async def welcome(self, ctx):
         embed = discord.Embed(
-            title="⚙️ Welcome commands", description="Configure welcome events. \n(vars for welcome messages: [members], [server], [user], [mention], [membercount])", color=0x006ce0)
+            title="⚙️ Welcome commands", description="Configure welcome events.", color=0x006ce0)
         embed.add_field(
             name="-welcome channel [channel]", value="Set the welcome channel", inline=False)
         embed.add_field(
@@ -31,7 +31,7 @@ class Config(commands.Cog, name='Config'):
             name="-welcome dm [message]", value="Set a dm welcome message", inline=False)
         embed.add_field(
             name="-welcome role [role]", value="Set a welcome role", inline=False)
-        embed.set_footer(text=f"{webs} | {ctx.author}")
+        embed.set_footer(text="Variables for welcome messages: {members}, {server}, {user}, {mention}, {membercount}")
         await ctx.send(embed=embed)
 
     @welcome.command()
