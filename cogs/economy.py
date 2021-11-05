@@ -256,8 +256,8 @@ class Economy(commands.Cog, name='Economy'):
                    str(ctx.author.avatar_url), ctx.guild.id, ctx.author.id)
             cursor.execute(sql, val)
             sql1 = (
-                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
-            val1 = (str(ctx.guild.icon_url), ctx.guild.id)
+                        "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+            val1 = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
             cursor.execute(sql1, val1)
             db.commit()
         embed = discord.Embed(
@@ -414,8 +414,8 @@ class Economy(commands.Cog, name='Economy'):
             f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} ORDER BY silver DESC LIMIT 5")
         result = cursor.fetchmany(5)
         sql1 = (
-                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
-        val1 = (str(ctx.guild.icon_url), ctx.guild.id)
+                        "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+        val1 = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
         cursor.execute(sql1, val1)
         db.commit()
         i = 0
