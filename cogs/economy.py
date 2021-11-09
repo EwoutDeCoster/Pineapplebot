@@ -100,7 +100,10 @@ class Economy(commands.Cog, name='Economy'):
 
     @commands.command()
     @commands.guild_only()
-    async def donate(self, ctx, person: discord.User, amount):
+    async def donate(self, ctx, person: discord.User = None, amount = None):
+        if person is None or amount is None:
+            await ctx.send("⚠️ **| Correct usage: `-donate [member] [amount]`**")
+            return
         def kform(num, round_to=2):
             if abs(num) < 1000:
                 return num
@@ -293,15 +296,19 @@ class Economy(commands.Cog, name='Economy'):
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
 
-    @commands.cooldown(1, 600, commands.BucketType.user)
+    @commands.cooldown(1, 120, commands.BucketType.user)
     @commands.command(aliases=['rob'])
     @commands.guild_only()
-    async def fight(self, ctx, user: discord.Member):
+    async def fight(self, ctx, user: discord.Member = None):
+        chances = [0, 1]
+        if user is None:
+            await ctx.send("⚠️ **| Missing argument: `member`**")
+            return
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
 
         cursor.execute(
-            f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+            f"SELECT guild, user, silver, metalsword FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
         if result is None:
             await ctx.message.reply("<a:no:898507018527211540> **| You don't have any silver!**")
@@ -310,14 +317,23 @@ class Economy(commands.Cog, name='Economy'):
             return
 
         cursor.execute(
-            f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} AND user = {user.id}")
+            f"SELECT guild, user, silver, metalsword FROM economy WHERE guild = {ctx.guild.id} AND user = {user.id}")
         result1 = cursor.fetchone()
         if result1 is None:
             await ctx.message.reply(f"<a:no:898507018527211540> **| {user} doesn't have any silver!**")
             cursor.close()
             db.close()
             return
-
+        zin = " "
+        zin1 = "."
+        if result[3] == 1:
+            chances.append(1)
+            chances.append(1)
+            zin = " using your sword "
+        if result1[3] == 1:
+            chances.append(0)
+            chances.append(0)
+            zin1 = " because they had a sword!"
         if result1[2] < 40:
             embed = discord.Embed(
                 title="💥 Fight", description=f"{user.mention} escaped because they were too weak!", color=0x005ec2)
@@ -337,7 +353,7 @@ class Economy(commands.Cog, name='Economy'):
             return
 
         if result[2] >= 40 and result1[2] >= 40:
-            winner = random.choice([0, 1])
+            winner = random.choice(chances)
             stolen = random.randint(30, 40)
 
             if winner == 0:
@@ -355,7 +371,7 @@ class Economy(commands.Cog, name='Economy'):
                 db.commit()
 
                 embed = discord.Embed(
-                    title="💥 Fight", description=f"You've **lost** the fight with {user.mention} and they took <:silver:856609576459304961> **{stolen}**", color=0x005ec2)
+                    title="💥 Fight", description=f"You've **lost** the fight with {user.mention}{zin1} They took <:silver:856609576459304961> **{stolen}**", color=0x005ec2)
                 embed.set_thumbnail(
                     url="https://thairesidents.com/wp-content/uploads/2020/09/165-1656043_nfs-9-19e-cartoon-fighting-cloud-clipart.png")
                 embed.set_footer(text=f"{webs} | {ctx.author}")
@@ -376,7 +392,7 @@ class Economy(commands.Cog, name='Economy'):
                 db.commit()
 
                 embed = discord.Embed(
-                    title="💥 Fight", description=f"You **won** the fight with {user.mention} and you stole <:silver:856609576459304961> **{stolen}**", color=0x005ec2)
+                    title="💥 Fight", description=f"You **won** the fight with {user.mention}{zin}and you stole <:silver:856609576459304961> **{stolen}**", color=0x005ec2)
                 embed.set_thumbnail(
                     url="https://thairesidents.com/wp-content/uploads/2020/09/165-1656043_nfs-9-19e-cartoon-fighting-cloud-clipart.png")
                 embed.set_footer(text=f"{webs} | {ctx.author}")
@@ -728,18 +744,23 @@ class Economy(commands.Cog, name='Economy'):
         embed = discord.Embed(
             title="Silver shop", description="-buy [item]", color=0x0068d6)
         embed.add_field(
-            name="** **", value="**<:pinebulldozer:873214898656665652> Mining machine**\nCollects silver for you.\n**<:silver:856609576459304961> 10K**")
+            name="** **", value="**<:pinebulldozer:873214898656665652> Mining machine**\nCollects silver for you.\n**<:silver:856609576459304961> `10K`**")
+        embed.add_field(
+            name="** **", value="**<:sword:907246919212994560> Metal sword**\nUsed to defend yourself.\n**<:silver:856609576459304961> `30K`**")
         embed.set_thumbnail(url="https://i.imgur.com/IBsL97C.png")
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
 
     @commands.command()
     @commands.guild_only()
-    async def buy(self, ctx, *, item):
+    async def buy(self, ctx, *, item = None):
+        if item is None:
+            await ctx.send("⚠️ **| Missing argument: `item`**")
+            return
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT silver, minerig FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+            f"SELECT silver, minerig, metalsword FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
 
         if item.lower() == "mining machine" or item.lower() == "miningmachine" or item.lower() == "machine":
@@ -762,6 +783,26 @@ class Economy(commands.Cog, name='Economy'):
                     await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
             else:
                 await ctx.send("<a:no:898507018527211540> **| You already have a mining rig!**")
+        if item.lower() == "metal sword" or item.lower() == "metalsword":
+            price = 30000
+            if result[2] == 0:
+                if result[0] >= price:
+                    sql = (
+                        "UPDATE economy SET silver = silver - ?, metalsword = 1 where guild = ? and user = ?")
+                    val = (price, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql, val)
+                    db.commit()
+                    embed = discord.Embed(title="You have bought the metal sword!",
+                                          description=f"The sword gives you a bigger chance to win `-fight` and will help you win boss fights.", color=0x00FF00)
+                    embed.set_thumbnail(url="https://i.imgur.com/JMug1Ni.png")
+                    embed.set_footer(text=f"{webs} | {ctx.author}")
+                    await ctx.send(embed=embed)
+                    cursor.close()
+                    db.close()
+                else:
+                    await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
+            else:
+                await ctx.send("<a:no:898507018527211540> **| You already have a metal sword!**")
         else:
             await ctx.send("<a:no:898507018527211540> **| Please enter a valid item!**")
 
@@ -780,13 +821,16 @@ class Economy(commands.Cog, name='Economy'):
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
         cursor.execute(
-            f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+            f"SELECT silver, minerig, mineriglvl, metalsword FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
         embed = discord.Embed(
             title="Inventory", description=f"**Balance:** <:silver:856609576459304961> {kform(result[0])}", color=0x0068d6)
         if result[1] == 1:
             embed.add_field(
                 name=f"<:pinebulldozer:873214898656665652> Mining machine `Level {result[2]}`", value="Collects silver for you (collectable every 8h)\n`-machine`")
+        if result[3] == 1:
+            embed.add_field(
+                name=f"<:sword:907246919212994560> Metal Sword", value="The sword gives you a bigger chance to win `-fight` and will help you win boss fights.")
         embed.set_thumbnail(url="https://i.imgur.com/PEsgp8j.png")
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
@@ -826,7 +870,7 @@ class Economy(commands.Cog, name='Economy'):
             await ctx.send("<a:no:898507018527211540> **| You don't have a mining rig!**")
 
     @machine.command()
-    @commands.cooldown(1, 28800, commands.BucketType.user)
+    @commands.cooldown(1, 9000, commands.BucketType.user)
     @commands.guild_only()
     async def collect(self, ctx):
         def kform(num, round_to=2):
