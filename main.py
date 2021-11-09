@@ -325,6 +325,7 @@ async def on_command_error(ctx, Exc):
                 await ctx.send(f"<a:hourglass:898511862075904061> **| This command is on cooldown, please retry in** `{remaining}d`.**")
             elif Exc.retry_after > 3600:
                 remaining = math.floor(Exc.retry_after / 3600)
+                
                 await ctx.send(f"<a:hourglass:898511862075904061> **| This command is on cooldown, please retry in `{remaining}h`.**")
             elif Exc.retry_after > 60:
                 remaining = math.floor(Exc.retry_after / 60)
