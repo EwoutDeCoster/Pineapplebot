@@ -438,6 +438,7 @@ class Info(commands.Cog, name='Info'):
                 loading = discord.Embed(color=0x0a4d8b,
                                         description=f"<a:loading:841639840785498173> Getting {cc} stats.")
                 loadmes = await ctx.send(embed=loading)
+                cc = cc.replace(" ", "-")
 
                 url = f"https://api.coingecko.com/api/v3/coins/{cc}?market_data=true&community_data=true&developer_data=true&sparkline=true"
                 stats = requests.get(url)
