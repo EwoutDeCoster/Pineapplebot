@@ -166,7 +166,7 @@ class Info(commands.Cog, name='Info'):
             embed.set_footer(text=f"{webs} | {ctx.author}")
             await ctx.send(embed=embed)
 
-    @commands.command(name="steam")
+    @commands.command(name="steam", enabled=False)
     @commands.guild_only()
     async def steam(self, ctx, name):
         try:
