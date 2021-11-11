@@ -30,7 +30,7 @@ class Help(commands.Cog, name='Help'):
                 embed.set_footer(text=f"{webs} | {ctx.author}")
                 await ctx.send(embed=embed)
         except:
-                pass
+                await ctx.send("🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/")
 
         # await ctx.message.add_reaction('<:check_pine:834872371281264661>')
 #

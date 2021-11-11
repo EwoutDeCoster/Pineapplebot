@@ -37,6 +37,20 @@ class Info(commands.Cog, name='Info'):
         embed.set_footer(text=f"{webs} | {ctx.author}")
         await ctx.send(embed=embed)
         print(f'{ctx.author} used Website cmd')
+    
+    @commands.command(name="support")
+    @commands.guild_only()
+    async def support(self, ctx):
+        try:
+                embed = discord.Embed(
+                title="Support", description="Join our support server to get help with anything", color=0x0a4d8b)
+                embed.add_field(
+                name="** **", value="Join by clicking [here](https://discord.gg/NkAqnN6pYG).")
+                embed.set_thumbnail(url=f"{str(self.client.user.avatar_url)}")
+                embed.set_footer(text=f"{webs} | {ctx.author}")
+                await ctx.send(embed=embed)
+        except:
+                await ctx.send("🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/")
 
     @commands.command(name='invite')
     async def invite(self, ctx):

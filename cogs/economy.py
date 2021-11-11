@@ -300,6 +300,8 @@ class Economy(commands.Cog, name='Economy'):
     @commands.command(aliases=['rob'])
     @commands.guild_only()
     async def fight(self, ctx, user: discord.Member = None):
+        if ctx.author == user:
+            await ctx.send("⚠️ **| You can't fight yourself**")
         chances = [0, 1]
         if user is None:
             await ctx.send("⚠️ **| Missing argument: `member`**")
