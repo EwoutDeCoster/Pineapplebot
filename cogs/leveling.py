@@ -121,7 +121,7 @@ class Leveling(commands.Cog, name='Leveling'):
                 while abs(num) >= 1000:
                     magnitude += 1
                     num = round(num / 1000.0, round_to)
-                return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
+                return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'B', 'T', 'qd'][magnitude])
         if self.levelison(ctx.guild.id):
             if user is not None:
                 if user.bot:
@@ -164,7 +164,10 @@ class Leveling(commands.Cog, name='Leveling'):
                         # get a drawing context
                         d = ImageDraw.Draw(txt)
 
-                        d.text((260, 45), f"{user}", font=nm,
+                        auth = f"{user.name}#{user.discriminator}"
+                        authorname = (auth[:18] + '...') if len(auth) > 18 else auth
+
+                        d.text((260, 45), f"{authorname}", font=nm,
                                fill=(7, 99, 190, 255))
                         d.text((260, 110), f"Level: {lvl_start}", font=fnt, fill=(
                             255, 255, 255, 255))
@@ -226,8 +229,10 @@ class Leveling(commands.Cog, name='Leveling'):
                     xpp = ImageFont.truetype("arial.ttf", 25)
                     # get a drawing context
                     d = ImageDraw.Draw(txt)
+                    auth = f"{ctx.author.name}#{ctx.author.discriminator}"
+                    authorname = (auth[:18] + '...') if len(auth) > 18 else auth
 
-                    d.text((260, 45), f"{ctx.author}", font=nm,
+                    d.text((260, 45), f"{authorname}", font=nm,
                            fill=(7, 99, 190, 255))
                     d.text((260, 110), f"Level: {lvl_start}", font=fnt, fill=(
                         255, 255, 255, 255))
@@ -242,16 +247,16 @@ class Leveling(commands.Cog, name='Leveling'):
                     out = Image.alpha_composite(base, txt)
                     out.save('levelcard.png')
                     await ctx.send(file=discord.File('levelcard.png'))
-                sql = (
-                    "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
-                val = (str(ctx.guild.icon_url), ctx.guild.id)
-                cursor.execute(sql, val)
-                sql2 = (
-                    "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
-                val2 = (str(ctx.author.avatar_url), ctx.author.name,
-                        ctx.author.discriminator, ctx.guild.id, ctx.author.id)
-                cursor.execute(sql2, val2)
-                db.commit()
+                    sql = (
+                        "UPDATE main SET serverlogo = ? WHERE guild_id = ?")
+                    val = (str(ctx.guild.icon_url), ctx.guild.id)
+                    cursor.execute(sql, val)
+                    sql2 = (
+                        "UPDATE leveling SET avatar = ?, username = ?, discriminator = ? WHERE guild_id = ? and user = ?")
+                    val2 = (str(ctx.author.avatar_url), ctx.author.name,
+                            ctx.author.discriminator, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql2, val2)
+                    db.commit()
                 cursor.close()
                 db.close()
         else:
