@@ -212,8 +212,10 @@ async def on_member_join(member):
         # get a drawing context
         d = ImageDraw.Draw(txt)
 
+        authorname = (member.display_name[:11] + '...') if len(member.display_name) > 11 else member.display_name
+
         d.text((260, 70), "Welcome", font=fnt, fill=(255, 255, 255, 128))
-        d.text((260, 120), f"{member.display_name}!",
+        d.text((260, 120), f"{authorname}!",
                font=fnt, fill=(255, 255, 255, 255))
 
         out = Image.alpha_composite(base, txt)
