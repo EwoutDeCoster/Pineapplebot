@@ -341,15 +341,6 @@ class Essentials(commands.Cog, name='Essentials'):
             return
 
     @commands.command()
-    async def vote(self, ctx):
-        embed = discord.Embed(
-            title="📩 Vote", description="**You can vote for the bot on [Top.gg](https://top.gg/bot/463388759866474506).**", color=0x0068d6)
-        embed.set_thumbnail(
-            url=f"{str(self.client.user.avatar_url)}")
-        embed.set_footer(text=f"You can vote using -vote every 12 hours.")
-        await ctx.send(embed=embed)
-
-    @commands.command()
     @commands.has_permissions(mention_everyone=True)
     async def check(self, ctx, *, message):
         await ctx.message.delete()
