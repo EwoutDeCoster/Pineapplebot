@@ -45,7 +45,7 @@ class Info(commands.Cog, name='Info'):
                 embed = discord.Embed(
                 title="Support", description="Join our support server to get help with anything", color=0x0a4d8b)
                 embed.add_field(
-                name="** **", value="Join by clicking [here](https://discord.gg/NkAqnN6pYG).")
+                name="** **", value="Join by clicking [here](https://discord.gg/6TRtwBBYYX).")
                 embed.set_thumbnail(url=f"{str(self.client.user.avatar_url)}")
                 embed.set_footer(text=f"{webs} | {ctx.author}")
                 await ctx.send(embed=embed)
