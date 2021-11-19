@@ -18,7 +18,7 @@ class Help(commands.Cog, name='Help'):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name="help")
+    @commands.command(name="help", aliases=['commands'])
     @commands.guild_only()
     async def help(self, ctx):
         try:
@@ -30,7 +30,10 @@ class Help(commands.Cog, name='Help'):
                 embed.set_footer(text=f"{webs} | {ctx.author}")
                 await ctx.send(embed=embed)
         except:
-                await ctx.send("🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/")
+                try:
+                        await ctx.send("🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/")
+                except:
+                        ctx.author.send(f"🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/\n\n⚠️ **| It looks like pinapple doesn't have enough permissions to send messages in the channel {ctx.channel.mention} in {ctx.guild.name}**")
 
         # await ctx.message.add_reaction('<:check_pine:834872371281264661>')
 #
