@@ -33,7 +33,7 @@ class Help(commands.Cog, name='Help'):
                 try:
                         await ctx.send("🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/")
                 except:
-                        ctx.author.send(f"🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/\n\n⚠️ **| It looks like pinapple doesn't have enough permissions to send messages in the channel {ctx.channel.mention} in {ctx.guild.name}**")
+                        await ctx.author.send(f"🍍 **| Go to our website for more information about the Pineapple Bot:\nhttps://www.pineapplebot.ga/\n\n⚠️ **| It looks like pinapple doesn't have enough permissions to send messages in the channel {ctx.channel.mention} in {ctx.guild.name}**")
 
         # await ctx.message.add_reaction('<:check_pine:834872371281264661>')
 #
