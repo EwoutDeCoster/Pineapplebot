@@ -73,7 +73,7 @@ class Vote(commands.Cog, name='Vote'):
                     magnitude += 1
                     num = round(num / 1000.0, round_to)
                 return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
-        price = random.randint(1000, 10000)
+        price = random.choice([random.randint(5000, 10000), random.randint(5000, 10000), random.randint(5000, 20000)])
         db = sqlite3.connect('cogs/main.sqlite')
         cursor = db.cursor()
         cursor.execute(
