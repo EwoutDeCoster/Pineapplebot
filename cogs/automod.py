@@ -20,7 +20,7 @@ class Automod(commands.Cog, name='Automod'):
             db = sqlite3.connect('cogs/main.sqlite')
             cursor = db.cursor()
             cursor.execute(
-                f"SELECT invitefilter, urlfilter FROM main WHERE guild_id = {message.author.guild.id}")
+                f"SELECT invitefilter, urlfilter FROM main WHERE guild_id = {message.guild.id}")
             result = cursor.fetchone()
             try:
                 if "https://giant.gfycat.com/DamagedFakeKinglet.mp4" in message.content:
