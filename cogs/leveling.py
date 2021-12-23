@@ -433,13 +433,13 @@ class Leveling(commands.Cog, name='Leveling'):
         embed.add_field(
             name=f"-rank (optional: [user])", value=f"Show the leveling card of a user", inline=True)
         embed.add_field(
-            name=f"-leaderboard", value=f"Show de leveling leaderboard of the server", inline=True)
+            name=f"-leaderboard", value=f"Show the leveling leaderboard of the server", inline=True)
         embed.add_field(
             name=f"-levels set [user] (optional: [lvl] [exp])", value=f"Reset or set the level of a user.", inline=True)
         embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
         await ctx.send(embed=embed)
 
-    @commands.has_permissions(kick_members=True)
+    @commands.has_permissions(manage_channels=True)
     @commands.guild_only()
     @levels.command(name="set")
     async def _set(self, ctx, user: discord.User, level=0, exp=0):

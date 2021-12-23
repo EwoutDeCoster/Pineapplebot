@@ -938,6 +938,43 @@ class Economy(commands.Cog, name='Economy'):
     @commands.guild_only()
     async def ct(self, ctx):
         await ctx.send(f"{time.time()}")
+    
+    @commands.group(invoke_without_command=True)
+    @commands.guild_only()
+    async def economy(self, ctx):
+        embed = discord.Embed(title="Levels commands", color=0x0068d6)
+        embed.set_thumbnail(
+            url="https://cdn.discordapp.com/emojis/856609576459304961.png?v=1")
+        embed.add_field(
+            name=f"-balance", value=f"Show your current balance", inline=True)
+        embed.add_field(
+            name=f"-top", value=f"Show the economy leaderboard of the server", inline=True)
+        embed.add_field(
+            name=f"-economy set [user] (optional: [lvl] [exp])", value=f"Reset or set the balance of a user.", inline=True)
+        embed.set_footer(text=f"Pineapplebot.ga | {ctx.author}")
+        await ctx.send(embed=embed)
+
+    @commands.has_permissions(manage_channels=True)
+    @commands.guild_only()
+    @economy.command(name="set")
+    async def _set(self, ctx, user: discord.User, silver=0):
+        try:
+            db = sqlite3.connect('cogs/main.sqlite')
+            cursor = db.cursor()
+            sql = (
+                f"UPDATE economy SET lvl = ? WHERE guild_id = {ctx.guild.id} and user = {user.id}")
+            val = (silver)
+            cursor.execute(sql, val)
+            db.commit()
+            if silver == 0:
+                await ctx.send(f"💰 | Balance has been reset for {user.mention}!")
+            else:
+                await ctx.send(f"💰 | {user.mention} has been given **{silver}** silver!")
+            await ctx.message.delete()
+            cursor.close()
+            db.close()
+        except:
+            await ctx.send("⚠️ **| That user hasn't used any economy features yet.**")
 
 
 def setup(client):
