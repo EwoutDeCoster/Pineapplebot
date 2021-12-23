@@ -15,7 +15,7 @@ from pathlib import Path
 from youtube_dl import YoutubeDL
 
 webs = str("Pineapplebot.ga")
-authservers = [456754639031762944, 828628284806922251]
+authservers = [456754639031762944, 828628284806922251, 897857552967147550]
 
 
 class Radio(commands.Cog, name='Radio'):

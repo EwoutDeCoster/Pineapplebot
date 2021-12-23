@@ -149,34 +149,40 @@ async def on_guild_remove(guild):
     db = sqlite3.connect('cogs/main.sqlite')
     cursor = db.cursor()
     sql = ("DELETE FROM main WHERE guild_id = '?'")
-    val = (guild.id)
+    val = (str(guild.id))
     cursor.execute(sql, val)
+    db.commit()
 
     sql1 = ("DELETE FROM economy WHERE guild = ?")
     val1 = (guild.id)
     cursor.execute(sql1, val1)
+    db.commit()
 
     sql2 = ("DELETE FROM leveling WHERE guild_id = '?'")
-    val2 = (guild.id)
+    val2 = (str(guild.id))
     cursor.execute(sql2, val2)
+    db.commit()
 
     sql3 = ("DELETE FROM reactionroles WHERE guild = ?")
     val3 = (guild.id)
     cursor.execute(sql3, val3)
+    db.commit()
 
     sql4 = ("DELETE FROM starboard WHERE guild = ?")
     val4 = (guild.id)
     cursor.execute(sql4, val4)
+    db.commit()
 
     sql5 = ("DELETE FROM suggestions WHERE guild = '?'")
-    val5 = (guild.id)
+    val5 = (str(guild.id))
     cursor.execute(sql5, val5)
+    db.commit()
 
     sql6 = ("DELETE FROM warnings WHERE guild = ?")
     val6 = (guild.id)
     cursor.execute(sql6, val6)
-
     db.commit()
+
     cursor.close()
     db.close()
 
@@ -279,7 +285,6 @@ async def setbotstatus(ctx, *, st):
         msg = await ctx.send(f"**<a:no:898507018527211540> | {ctx.author.mention} You don't have the perms to do that**")
         await asyncio.sleep(3)
         await msg.delete()
-
 
 @client.event
 async def on_command_error(ctx, Exc):

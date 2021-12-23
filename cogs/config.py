@@ -345,7 +345,6 @@ class Config(commands.Cog, name='Config'):
     @commands.guild_only()
     @commands.has_permissions(manage_channels=True)
     async def setchannel(self, ctx, channel: discord.TextChannel):
-        if ctx.message.author.guild_permissions.manage_messages:
             db = sqlite3.connect('cogs/main.sqlite')
             cursor = db.cursor()
             cursor.execute(
@@ -365,8 +364,6 @@ class Config(commands.Cog, name='Config'):
             db.commit()
             cursor.close()
             db.close()
-        else:
-            await ctx.send("**<a:no:898507018527211540> | You don't have the perms to do that!**")
 
     @suggestions.command()
     @commands.guild_only()
