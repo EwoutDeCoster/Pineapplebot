@@ -8,7 +8,7 @@
 
 ## **API toepassing:**
 
-### The data on the website is gathered from the API. <br>This is used to create <a href="https://pineapplebot.ga/leveling.html?&guild=456754639031762944" title="Economy & Leveling">Leveling & economy leaderboards</a>. <br>You can find the leaderboards using the `-leaderboard` and `-top` commands.
+### The data on the website is gathered from the API. <br>This is used to create <a href="https://pineapplebot.ga/leveling.html?&guild=456754639031762944" title="Economy & Leveling">Leveling & economy leaderboards</a>. <br>You can also find the leaderboards using the `-leaderboard` and `-top` commands.
 
 <br>
 <br>
