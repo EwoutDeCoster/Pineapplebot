@@ -1,0 +1,36 @@
+*, *:before, *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.menu_links {
+  cursor: pointer;
+}
+
+.collabsible {
+  background-color: #0068d6;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.navbar {
+  transition: 0.2s;
+}
+
+.navbar-brand {
+  transition: 0.2s;
+}
+

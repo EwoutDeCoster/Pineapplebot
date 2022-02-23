@@ -1,0 +1,94 @@
+.collapsible {
+  background-color: #3592f7;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  border-radius: 10px;
+  margin-top: 7px;
+  font-weight: bold;
+}
+
+.example {
+  margin-top: 10px;
+}
+
+.admin {
+  background-color: #ED4245;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  border-radius: 10px;
+  margin-top: 7px;
+  font-weight: bold;
+  font-weight: bold;
+}
+
+.activecol, .collapsible:hover {
+  background-color: #007bff;
+}
+
+.activecolad, .admin:hover {
+  background-color: #f52a2e;
+}
+
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.admin:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.activecol:after {
+  content: "\2212";
+}
+
+.activecolad:after {
+  content: "\2212";
+}
+
+/* .activecolad, .collapsiblead:hover {
+  background-color: #ED4245;
+} */
+
+.content {
+  padding: 0 10px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+}
+
+p {
+  margin-top: 8px;
+}
+
+.form-check-input:checked {
+  background-color: #ED4245;
+  border-color: #ED4245;
+}
+
+.content a {
+  text-decoration: none;
+  color: #61a7f2 !important;
+}
+

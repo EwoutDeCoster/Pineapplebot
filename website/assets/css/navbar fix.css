@@ -1,0 +1,13 @@
+@media (min-width: 768px) {
+  #content-wrapper {
+    margin-left: 104px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  #nvbr {
+    height: 100vh !important;
+    position: fixed !important;
+  }
+}
+
