@@ -6,7 +6,7 @@
 <br>
 <br>
 
-### **For more information you can reach me by sending a message using <a href="mailto:ewout.decoster@student.hogent.be">email</a> or <a href="https://teams.microsoft.com/l/chat/0/0?users=ewout.decoster@student.hogent.be">teams</a>.**
+### **You can reach me by sending a message using <a href="mailto:ewout.decoster@student.hogent.be">email</a> or <a href="https://teams.microsoft.com/l/chat/0/0?users=ewout.decoster@student.hogent.be">teams</a>.**
 <br>
 
 #### ***In this project:*** *HTML, CSS, Javascript, Node.js, Python, SQLite, Ubuntu Server*
