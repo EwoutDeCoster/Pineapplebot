@@ -116,39 +116,43 @@ class Radio(commands.Cog, name='Radio'):
     @commands.guild_only()
     async def p(self, ctx, *args):
         try:
+            
             if ctx.guild.id in authservers:
-                query = " ".join(args)
-                if query.startswith("https://open.spotify"):
-                    r = requests.get(
-                            f'https://pineappleapi.ga/yt?song={query}')
-                    d = r.json()
-                    sng = d["data"]["track"]
-                    art = d["data"]["artist"]
-                    query = f"{art} {sng}"
+                if ctx.author.id == 302075047244333056:
+                    query = " ".join(args)
+                    if query.startswith("https://open.spotify"):
+                        r = requests.get(
+                                f'https://pineappleapi.ga/yt?song={query}')
+                        d = r.json()
+                        sng = d["data"]["track"]
+                        art = d["data"]["artist"]
+                        query = f"{art} {sng}"
 
-                voice_channel = ctx.author.voice.channel
-                if voice_channel is None:
-                    # you need to be connected so that the bot knows where to go
-                    await ctx.send("⚠ **| Connect to a voice channel!**")
-                else:
-                    song = self.search_yt(query)
-                    if type(song) == type(True):
-                        await ctx.send("⚠ **| Could not download song. Make sure it's not a livestream.**")
+                    voice_channel = ctx.author.voice.channel
+                    if voice_channel is None:
+                        # you need to be connected so that the bot knows where to go
+                        await ctx.send("⚠ **| Connect to a voice channel!**")
                     else:
-                        embed = discord.Embed(
-                            title="Added to queue", description="**{}**\n`{:0>8}`".format(song['title'], str(timedelta(seconds=song['duration']))), color=0x006ce0)
-                        embed.set_thumbnail(
-                            url=f"{song['thumb']}")
-                        await ctx.send(embed=embed)
-                        print(song['duration'])
-                        print("{:0>8}".format(
-                            str(timedelta(seconds=song['duration']))))
+                        song = self.search_yt(query)
+                        if type(song) == type(True):
+                            await ctx.send("⚠ **| Could not download song. Make sure it's not a livestream.**")
+                        else:
+                            embed = discord.Embed(
+                                title="Added to queue", description="**{}**\n`{:0>8}`".format(song['title'], str(timedelta(seconds=song['duration']))), color=0x006ce0)
+                            embed.set_thumbnail(
+                                url=f"{song['thumb']}")
+                            await ctx.send(embed=embed)
+                            print(song['duration'])
+                            print("{:0>8}".format(
+                                str(timedelta(seconds=song['duration']))))
 
-                        self.music_queue.append(
-                            [song, voice_channel, ctx.author.id])
+                            self.music_queue.append(
+                                [song, voice_channel, ctx.author.id])
 
-                        if self.is_playing == False:
-                            await self.play_music()
+                            if self.is_playing == False:
+                                await self.play_music()
+                else:
+                    await ctx.send("**⚠️ | Music is disabled due to `Neutende Milan` **")
         except UnexpectedQuoteError as e:
             await ctx.send(f"Something went wrong: {e}")
 

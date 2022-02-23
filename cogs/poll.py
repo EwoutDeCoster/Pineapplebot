@@ -37,7 +37,7 @@ class Poll(commands.Cog, name='Poll'):
         else:
             embed = discord.Embed(title="🗳️ Poll",
                                   description=question,
-                                  colour=0xff9500,
+                                  color=0x0068d6,
                                   timestamp=datetime.utcnow())
 
             fields = [("Options", "\n".join([f"{numbers[idx]} {option}" for idx, option in enumerate(options)]), False),
@@ -80,8 +80,9 @@ class Poll(commands.Cog, name='Poll'):
     @commands.command(name='suggest')
     @commands.guild_only()
     @commands.cooldown(1, 60, commands.BucketType.user)
-    async def suggest(self, ctx, *, sug):
+    async def suggest(self, ctx, *, suggestion):
         try:
+            sug = suggestion
             x = uuid4()
             sugid = str(x)[:8]
             db = sqlite3.connect('cogs/main.sqlite')
@@ -89,6 +90,11 @@ class Poll(commands.Cog, name='Poll'):
             cursor.execute(
                 f"SELECT sugs FROM main WHERE guild_id = {ctx.author.guild.id}")
             result = cursor.fetchone()
+            if result is None:
+                msg = await ctx.send("⚠️ **| Suggestions are not enabled**")
+                await asyncio.sleep(3)
+                await msg.delete()
+                return
             channel = self.client.get_channel(int(result[0]))
 
             embed = discord.Embed(color=0x005ec2)
@@ -132,7 +138,13 @@ class Poll(commands.Cog, name='Poll'):
             cursor.execute(
                 f"SELECT handsugs FROM main WHERE guild_id = {ctx.author.guild.id}")
             result = cursor.fetchone()
+            print(result)
             channel = self.client.get_channel(int(result[0]))
+            if result is None:
+                msg = await ctx.send("⚠️ **| Suggestions are not enabled**")
+                await asyncio.sleep(3)
+                await msg.delete()
+                return
             cursor.execute(
                 f"SELECT id, guild, user, message, msgid FROM suggestions WHERE guild = {ctx.author.guild.id} AND id = \"{sid}\"")
             result1 = cursor.fetchone()
@@ -199,6 +211,11 @@ class Poll(commands.Cog, name='Poll'):
             cursor.execute(
                 f"SELECT handsugs FROM main WHERE guild_id = {ctx.author.guild.id}")
             result = cursor.fetchone()
+            if result is None:
+                msg = await ctx.send("⚠️ **| Suggestions are not enabled**")
+                await asyncio.sleep(3)
+                await msg.delete()
+                return
             channel = self.client.get_channel(int(result[0]))
             cursor.execute(
                 f"SELECT id, guild, user, message, msgid FROM suggestions WHERE guild = {ctx.author.guild.id} AND id = \"{sid}\"")
@@ -268,6 +285,11 @@ class Poll(commands.Cog, name='Poll'):
         cursor.execute(
             f"SELECT handsugs FROM main WHERE guild_id = {ctx.author.guild.id}")
         result = cursor.fetchone()
+        if result is None:
+                msg = await ctx.send("⚠️ **| Suggestions are not enabled**")
+                await asyncio.sleep(3)
+                await msg.delete()
+                return
         channel = self.client.get_channel(int(result[0]))
         cursor.execute(
             f"SELECT id, guild, user, message, msgid FROM suggestions WHERE guild = {ctx.author.guild.id} AND id = \"{sid}\"")

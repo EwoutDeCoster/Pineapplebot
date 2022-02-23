@@ -24,6 +24,7 @@ class Economy(commands.Cog, name='Economy'):
 
     def __init__(self, client):
         self.client = client
+        self.asylist = []
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['work'])
@@ -100,10 +101,11 @@ class Economy(commands.Cog, name='Economy'):
 
     @commands.command()
     @commands.guild_only()
-    async def donate(self, ctx, person: discord.User = None, amount = None):
+    async def donate(self, ctx, person: discord.User = None, amount=None):
         if person is None or amount is None:
             await ctx.send("⚠️ **| Correct usage: `-donate [member] [amount]`**")
             return
+
         def kform(num, round_to=2):
             if abs(num) < 1000:
                 return num
@@ -259,7 +261,7 @@ class Economy(commands.Cog, name='Economy'):
                    str(ctx.author.avatar_url), ctx.guild.id, ctx.author.id)
             cursor.execute(sql, val)
             sql1 = (
-                        "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+                "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
             val1 = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
             cursor.execute(sql1, val1)
             db.commit()
@@ -433,14 +435,14 @@ class Economy(commands.Cog, name='Economy'):
             f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} ORDER BY silver DESC LIMIT 5")
         result = cursor.fetchmany(5)
         sql1 = (
-                        "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
+            "UPDATE main SET serverlogo = ?, guild_name = ? WHERE guild_id = ?")
         val1 = (str(ctx.guild.icon_url), ctx.guild.name, ctx.guild.id)
         cursor.execute(sql1, val1)
         db.commit()
         i = 0
         embed = discord.Embed(title="Silver leaderboard",
                               description=f"Visit the economy leaderboard [here](https://pineapplebot.ga/economy?guild={ctx.guild.id}).", color=0x0068d6)
-        #while i < len(result):
+        # while i < len(result):
         #    username = self.client.get_user(int(result[i][1]))
         #    embed.add_field(name=f"** **",
         #                    value=f"**{i+1})** {username.mention}\n   <:silver:856609576459304961> **{kform(int(result[i][2]))}**", inline=False)
@@ -465,128 +467,151 @@ class Economy(commands.Cog, name='Economy'):
                     num = round(num / 1000.0, round_to)
                 return '{:.{}f}{}'.format(round(num, round_to), round_to, ['', 'K', 'M', 'G', 'T', 'P'][magnitude])
         try:
-            db = sqlite3.connect('cogs/main.sqlite')
-            cursor = db.cursor()
+            if ctx.author.id not in self.asylist:
+                self.asylist.append(ctx.author.id)
+                db = sqlite3.connect('cogs/main.sqlite')
+                cursor = db.cursor()
 
-            cursor.execute(
-                f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
-            result = cursor.fetchone()
+                cursor.execute(
+                    f"SELECT guild, user, silver FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
+                result = cursor.fetchone()
 
-            if amount == None:
-                await ctx.send("<a:no:898507018527211540> **| Please enter an amount.**")
-                return
+                if amount == None:
+                    await ctx.send("<a:no:898507018527211540> **| Please enter an amount.**")
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
 
-            if amount.lower() == "all":
-                amount = result[2]
+                if amount.lower() == "all":
+                    amount = result[2]
 
-            if int(amount) < 10:
-                await ctx.send("<a:no:898507018527211540> **| Your bet must be at least 10 silver.**")
-                return
+                if int(amount) < 10:
+                    await ctx.send("<a:no:898507018527211540> **| Your bet must be at least 10 silver.**")
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
 
-            if result is None:
-                await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
-                cursor.close()
-                db.close()
-                return
+                if result is None:
+                    await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
+                    cursor.close()
+                    db.close()
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
 
-            bal = int(result[2])
+                bal = int(result[2])
 
-            amount = int(amount)
-            if amount > bal:
-                await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
-                cursor.close()
-                db.close()
-                return
-            if amount < 0:
-                await ctx.send("<a:no:898507018527211540> **| Amount should always be positive**")
-                cursor.close()
-                db.close()
-                return
+                amount = int(amount)
+                if amount > bal:
+                    await ctx.send("<a:no:898507018527211540> **| You don't have enough silver!**")
+                    cursor.close()
+                    db.close()
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
+                if amount < 0:
+                    await ctx.send("<a:no:898507018527211540> **| Amount should always be positive**")
+                    cursor.close()
+                    db.close()
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
 
-            slots = ['<:gold:856609522965151785>',
-                     ':tada:', ':money_with_wings:', ':moneybag:', ':gift:', ":gem:"]
-            slot1 = slots[random.randint(0, 5)]
-            slot2 = slots[random.randint(0, 5)]
-            slot3 = slots[random.randint(0, 5)]
+                slots = ['<:gold:856609522965151785>',
+                         ':tada:', ':money_with_wings:', ':moneybag:', ':gift:', ":gem:"]
+                slot1 = slots[random.randint(0, 5)]
+                slot2 = slots[random.randint(0, 5)]
+                slot3 = slots[random.randint(0, 5)]
 
-            slotOutput = '| {} | {} | {} |\n'.format(slot1, slot2, slot3)
+                slotOutput = '| {} | {} | {} |\n'.format(slot1, slot2, slot3)
 
-            spinningall = discord.Embed(title="🎰 Spinning...", color=0x0068d6)
-            spinningall.add_field(
-                name="| <a:slots:859388574972510238> | <a:slots:859388574972510238> | <a:slots:859388574972510238> |\n \nSpinning", value="You...")
+                spinningall = discord.Embed(
+                    title="🎰 Spinning...", color=0x0068d6)
+                spinningall.add_field(
+                    name="| <a:slots:859388574972510238> | <a:slots:859388574972510238> | <a:slots:859388574972510238> |\n \nSpinning", value="You...")
 
-            spinning2 = discord.Embed(title="🎰 Spinning...", color=0x0068d6)
-            spinning2.add_field(
-                name=f"| {slot1} | <a:slots:859388574972510238> | <a:slots:859388574972510238> |\n \nSpinning", value="You...")
+                spinning2 = discord.Embed(
+                    title="🎰 Spinning...", color=0x0068d6)
+                spinning2.add_field(
+                    name=f"| {slot1} | <a:slots:859388574972510238> | <a:slots:859388574972510238> |\n \nSpinning", value="You...")
 
-            spinning1 = discord.Embed(title="🎰 Spinning...", color=0x0068d6)
-            spinning1.add_field(
-                name=f"| {slot1} | {slot2} | <a:slots:859388574972510238> |\n \nSpinning", value="You...")
+                spinning1 = discord.Embed(
+                    title="🎰 Spinning...", color=0x0068d6)
+                spinning1.add_field(
+                    name=f"| {slot1} | {slot2} | <a:slots:859388574972510238> |\n \nSpinning", value="You...")
 
-            spinning0 = discord.Embed(title="🎰 Spinning...", color=0x0068d6)
-            spinning0.add_field(
-                name=f"| {slot1} | {slot2} | {slot3} |\n \nSpinning", value="You...")
+                spinning0 = discord.Embed(
+                    title="🎰 Spinning...", color=0x0068d6)
+                spinning0.add_field(
+                    name=f"| {slot1} | {slot2} | {slot3} |\n \nSpinning", value="You...")
 
-            spin = await ctx.send(embed=spinningall)
-            await spin.edit(embed=spinningall)
-            await asyncio.sleep(0.6)
-            await spin.edit(embed=spinning2)
-            await asyncio.sleep(0.6)
-            await spin.edit(embed=spinning1)
-            await asyncio.sleep(0.6)
-            await spin.edit(embed=spinning0)
-            await asyncio.sleep(0.6)
+                spin = await ctx.send(embed=spinningall)
+                await spin.edit(embed=spinningall)
+                await asyncio.sleep(0.6)
+                await spin.edit(embed=spinning2)
+                await asyncio.sleep(0.6)
+                await spin.edit(embed=spinning1)
+                await asyncio.sleep(0.6)
+                await spin.edit(embed=spinning0)
+                await asyncio.sleep(0.6)
 
-            ok = discord.Embed(title="🎰 Slots Machine",
-                               color=discord.Color(0x00FF00))
-            ok.add_field(name="{}\nWon".format(slotOutput),
-                         value=f'You won {kform(1*amount)} silver')
+                ok = discord.Embed(title="🎰 Slots Machine",
+                                   color=discord.Color(0x00FF00))
+                ok.add_field(name="{}\nWon".format(slotOutput),
+                             value=f'You won {kform(1*amount)} silver')
 
-            won = discord.Embed(title="🎰 Slots Machine",
-                                color=discord.Color(0xFFF300))
-            won.add_field(name="{}\nJackpot!".format(slotOutput),
-                          value=f'You won {kform(3*amount)} silver')
+                won = discord.Embed(title="🎰 Slots Machine",
+                                    color=discord.Color(0xFFF300))
+                won.add_field(name="{}\nJackpot!".format(slotOutput),
+                              value=f'You won {kform(3*amount)} silver')
 
-            lost = discord.Embed(title="🎰 Slots Machine",
-                                 color=discord.Color(0xFF4B24))
-            lost.add_field(name="{}\nLost".format(slotOutput),
-                           value=f'You lost {kform(1*amount)} silver')
+                lost = discord.Embed(title="🎰 Slots Machine",
+                                     color=discord.Color(0xFF4B24))
+                lost.add_field(name="{}\nLost".format(slotOutput),
+                               value=f'You lost {kform(1*amount)} silver')
 
-            if slot1 == slot2 == slot3:
-                sql = (
-                    "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
-                val = (amount*3, ctx.guild.id, ctx.author.id)
-                cursor.execute(sql, val)
-                db.commit()
-                await spin.edit(embed=won)
-                cursor.close()
-                db.close()
-                return
+                if slot1 == slot2 == slot3:
+                    sql = (
+                        "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
+                    val = (amount*3, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql, val)
+                    db.commit()
+                    await spin.edit(embed=won)
+                    cursor.close()
+                    db.close()
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
 
-            if slot1 == slot2 or slot1 == slot3 or slot2 == slot3:
-                sql = (
-                    "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
-                val = (amount, ctx.guild.id, ctx.author.id)
-                cursor.execute(sql, val)
-                db.commit()
+                if slot1 == slot2 or slot1 == slot3 or slot2 == slot3:
+                    sql = (
+                        "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
+                    val = (amount, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql, val)
+                    db.commit()
 
-                await spin.edit(embed=ok)
-                cursor.close()
-                db.close()
-                return
+                    await spin.edit(embed=ok)
+                    cursor.close()
+                    db.close()
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
 
+                else:
+                    sql = (
+                        "UPDATE economy SET silver = silver - ? where guild = ? and user = ?")
+                    val = (amount, ctx.guild.id, ctx.author.id)
+                    cursor.execute(sql, val)
+                    db.commit()
+
+                    await spin.edit(embed=lost)
+                    cursor.close()
+                    db.close()
+                    self.asylist.pop(self.asylist.index(ctx.author.id))
+                    return
             else:
-                sql = (
-                    "UPDATE economy SET silver = silver - ? where guild = ? and user = ?")
-                val = (amount, ctx.guild.id, ctx.author.id)
-                cursor.execute(sql, val)
-                db.commit()
+                mes = await ctx.send("⚠️ **| Wait your previous slots machine to finish")
+                asyncio.sleep(2)
+                await mes.delete()
 
-                await spin.edit(embed=lost)
-                cursor.close()
-                db.close()
-                return
         except:
+            try:
+                self.asylist.pop(self.asylist.index(ctx.author.id))
+            except:
+                pass
             await ctx.send("<a:no:898507018527211540> **| Please enter a valid amount.**")
 
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -688,7 +713,6 @@ class Economy(commands.Cog, name='Economy'):
             cursor.close()
             db.close()
             return
-
         choices = [-200, -150, -100, -50, 50, 100, 150, 200]
         images = {
             -100: "https://i.imgur.com/1X6vK7O.png",
@@ -756,7 +780,7 @@ class Economy(commands.Cog, name='Economy'):
 
     @commands.command()
     @commands.guild_only()
-    async def buy(self, ctx, *, item = None):
+    async def buy(self, ctx, *, item=None):
         if item is None:
             await ctx.send("⚠️ **| Missing argument: `item`**")
             return
@@ -890,7 +914,8 @@ class Economy(commands.Cog, name='Economy'):
         cursor.execute(
             f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
-        reward = round(33 * (int(result[2]) ** 2) + 10*int(result[2]) + 225 + random.randint(1, 15*int(result[2])))
+        reward = round(33 * (int(result[2]) ** 2) + 10*int(result[2]
+                                                           ) + 225 + random.randint(1, 15*int(result[2])))
         if result[1] == 1:
             sql = (
                 "UPDATE economy SET silver = silver + ? where guild = ? and user = ?")
@@ -914,7 +939,7 @@ class Economy(commands.Cog, name='Economy'):
             f"SELECT silver, minerig, mineriglvl FROM economy WHERE guild = {ctx.guild.id} AND user = {ctx.author.id}")
         result = cursor.fetchone()
         needed = int(2500 + 750 * int(result[2]) +
-                           100 * int(result[2]) * int(result[2]))
+                     100 * int(result[2]) * int(result[2]))
         if needed < int(result[0]):
             sql = (
                 "UPDATE economy SET silver = silver - ?, mineriglvl = mineriglvl + 1 where guild = ? and user = ?")
@@ -938,7 +963,7 @@ class Economy(commands.Cog, name='Economy'):
     @commands.guild_only()
     async def ct(self, ctx):
         await ctx.send(f"{time.time()}")
-    
+
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
     async def economy(self, ctx):
